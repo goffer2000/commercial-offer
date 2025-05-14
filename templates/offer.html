@@ -23,7 +23,7 @@
     <form method="POST">
       <p><label>Адрес объекта: <input name="address" required></label></p>
       <p><label>Наименование объекта: <input name="object_name" required></label></p>
-      <p><label>Дата: <input type="date" name="date" value="{{date.today()}}" required></label></p>
+      <p><label>Дата: <input type="date" name="date" value="{{ current_date }}" required></label></p>
       <p><label>Площадь покрытия (м²): <input type="number" name="area" step="0.01" required></label></p>
 
       <p><label>Материал:
