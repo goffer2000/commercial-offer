@@ -2,162 +2,88 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Форма коммерческого предложения</title>
   <style>
-    body { font-family: sans-serif; margin: 40px; max-width: 600px; }
-    label { display: block; margin-top: 15px; }
-    input, select { width: 100%; padding: 8px; margin-top: 5px; }
-    .inline-inputs { display: flex; gap: 10px; }
-    .inline-inputs > div { flex: 1; }
-    button { margin-top: 20px; padding: 10px 20px; }
+    body { font-family: DejaVu Sans, sans-serif; font-size: 12pt; }
+    .logo { text-align: right; margin-bottom: 10px; }
+    .company-info { font-size: 10pt; margin-bottom: 20px; }
+    h2 { text-align: center; margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+    .right { text-align: right; }
+    .no-border { border: none; }
   </style>
 </head>
 <body>
 
-  <h1>Форма коммерческого предложения</h1>
+<div class="logo">
+  <img src="{{ url_for('static', filename='logo.png') }}" width="150">
+</div>
 
-  <form id="offerForm" method="POST">
-    <label>Адрес объекта:
-      <input name="address" required>
-    </label>
+<div class="company-info">
+  ТОО «Фактура», БИН 151240007938, место нахождения Казахстан, г. Нур-Султан, пр. Менгелик Ел, 49<br>
+  <strong>Директор по продажам:</strong> Бурьян Катерина<br>
+  <strong>моб.тел:</strong> +7 705 657 67 57<br>
+  <strong>e-mail:</strong> es@faktura.com.kz
+</div>
 
-    <label>Наименование объекта:
-      <input name="object_name" required>
-    </label>
+<p><strong>Наименование строительства и его адрес:</strong> {{ address }}</p>
+<p><strong>Наименование объекта:</strong> {{ object_name }}</p>
+<p>Основание: коммерческое предложение составлено на основании запроса</p>
 
-    <label>Дата:
-      <input type="date" name="date" value="{{ current_date }}" required>
-    </label>
+<h2>ARMOOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
 
-    <label>Площадь покрытия (м²):
-      <input type="number" name="area" id="area" required>
-    </label>
+<table>
+  <tr>
+    <th>№</th>
+    <th>Описание</th>
+    <th>Ед. измерения</th>
+    <th>Количество</th>
+    <th>Стоимость единицы, тг</th>
+    <th>Сумма, тг</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>
+      Площадь стен для покрытия материалом Armourcoat "{{ material }}",<br>
+      в том числе:<br>
+      Материал Armourcoat "{{ material }}" PLS
+    </td>
+    <td>Банка 5л</td>
+    <td class="right">{{ mat_qty }}</td>
+    <td class="right">{{ '{:,.0f}'.format(mat_cost // mat_qty).replace(',', ' ') }}</td>
+    <td class="right">{{ '{:,.0f}'.format(mat_cost).replace(',', ' ') }}</td>
+  </tr>
+</table>
 
-    <label>Материал:
-      <select name="material" id="material" required>
-        <option value="">-- Выберите --</option>
-        <option value="PERLATA">PERLATA</option>
-        <option value="TACTITE">TACTITE</option>
-        <option value="LimeWash">LimeWash</option>
-        <option value="ISTRIA">ISTRIA P350</option>
-      </select>
-    </label>
+{% if base_qty %}
+<h3>Стоимость материалов для создания базового слоя</h3>
+<table>
+  <tr>
+    <th>Базовый слой: Материал {{ base_layer }}</th>
+    <th>Ед. изм</th>
+    <th>Количество</th>
+    <th>Цена за ед., тг</th>
+    <th>Сумма, тг</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td>Банка</td>
+    <td class="right">{{ base_qty }}</td>
+    <td class="right">{{ '{:,.0f}'.format(base_cost // base_qty).replace(',', ' ') }}</td>
+    <td class="right">{{ '{:,.0f}'.format(base_cost).replace(',', ' ') }}</td>
+  </tr>
+</table>
+{% endif %}
 
-    <div id="materialBlock" style="display:none;">
-      <div class="inline-inputs">
-        <div>
-          <label>Кол-во (материал):
-            <input type="number" name="material_qty" id="material_qty">
-          </label>
-        </div>
-        <div>
-          <label>Стоимость (тг):
-            <input type="number" name="material_cost" id="material_cost">
-          </label>
-        </div>
-      </div>
-    </div>
+<h3 class="right">ИТОГО: {{ '{:,.0f}'.format(total).replace(',', ' ') }} тг</h3>
 
-    <label id="baseLabel" style="display:none;">Базовый слой:
-      <select name="base_layer" id="base_layer">
-        <!-- заполняется через JS -->
-      </select>
-    </label>
+<p><em>
+Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.
+</em></p>
 
-    <div id="baseBlock" style="display:none;">
-      <div class="inline-inputs">
-        <div>
-          <label>Кол-во (база):
-            <input type="number" name="base_qty" id="base_qty">
-          </label>
-        </div>
-        <div>
-          <label>Стоимость (тг):
-            <input type="number" name="base_cost" id="base_cost">
-          </label>
-        </div>
-      </div>
-    </div>
+<p>
+«{{ material }}» — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды, обеспечивающими создание элегантного внешнего вида декоративной отделки. Представлена богатой палитрой цветов, подходящей для современных и классических интерьеров.
+</p>
 
-    <button type="submit">Сформировать PDF</button>
-  </form>
-
-  <script>
-    const materialSelect = document.getElementById("material");
-    const baseSelect = document.getElementById("base_layer");
-    const areaInput = document.getElementById("area");
-
-    const materialQty = document.getElementById("material_qty");
-    const materialCost = document.getElementById("material_cost");
-    const baseQty = document.getElementById("base_qty");
-    const baseCost = document.getElementById("base_cost");
-
-    const materialBlock = document.getElementById("materialBlock");
-    const baseLabel = document.getElementById("baseLabel");
-    const baseBlock = document.getElementById("baseBlock");
-
-    const materialData = {
-      PERLATA: { rate: 6, price: 54200, bases: ["BaseColor Matt", "Marshall Export2"] },
-      TACTITE: { rate: 9, price: 72000, bases: ["BaseColor Satine", "Dulux Bindo20"] },
-      LimeWash: { rate: 5, price: 28000, bases: [] },
-      ISTRIA: { rate: 0.8, price: 10563, bases: [] }
-    };
-
-    const baseData = {
-      "BaseColor Matt": { rate: 9, price: 27000 },
-      "BaseColor Satine": { rate: 9, price: 27000 },
-      "Dulux Bindo20": { rate: 7, price: 8000 },
-      "Marshall Export2": { rate: 7, price: 4000 }
-    };
-
-    function updateForm() {
-      const material = materialSelect.value;
-      const area = parseFloat(areaInput.value) || 0;
-
-      if (!material || !materialData[material]) return;
-
-      const mat = materialData[material];
-      const matQty = Math.ceil(area / mat.rate);
-      const matSum = matQty * mat.price;
-
-      materialQty.value = matQty;
-      materialCost.value = matSum;
-      materialBlock.style.display = "block";
-
-      // Базовый слой
-      if (mat.bases.length) {
-        baseLabel.style.display = "block";
-        baseBlock.style.display = "block";
-        baseSelect.innerHTML = "";
-        mat.bases.forEach(b => {
-          const opt = document.createElement("option");
-          opt.value = b;
-          opt.text = b;
-          baseSelect.appendChild(opt);
-        });
-        updateBaseLayer();
-      } else {
-        baseLabel.style.display = "none";
-        baseBlock.style.display = "none";
-        baseSelect.innerHTML = "";
-      }
-    }
-
-    function updateBaseLayer() {
-      const base = baseSelect.value;
-      const area = parseFloat(areaInput.value) || 0;
-      if (!base || !baseData[base]) return;
-      const baseRate = baseData[base].rate;
-      const basePrice = baseData[base].price;
-      const qty = Math.ceil(area / baseRate);
-      const sum = qty * basePrice;
-      baseQty.value = qty;
-      baseCost.value = sum;
-    }
-
-    materialSelect.addEventListener("change", updateForm);
-    areaInput.addEventListener("input", updateForm);
-    baseSelect.addEventListener("change", updateBaseLayer);
-  </script>
 </body>
 </html>
