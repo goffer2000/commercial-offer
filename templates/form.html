@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Форма коммерческого предложения</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; max-width: 600px; }
+    label { display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; }
+    .inline-inputs { display: flex; gap: 10px; }
+    .inline-inputs > div { flex: 1; }
+    button { margin-top: 20px; padding: 10px 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>Форма коммерческого предложения</h1>
+
+  <form id="offerForm" method="POST">
+    <label>Адрес объекта:
+      <input name="address" required>
+    </label>
+
+    <label>Наименование объекта:
+      <input name="object_name" required>
+    </label>
+
+    <label>Дата:
+      <input type="date" name="date" value="{{ current_date }}" required>
+    </label>
+
+    <label>Площадь покрытия (м²):
+      <input type="number" name="area" id="area" required>
+    </label>
+
+    <label>Материал:
+      <select name="material" id="material" required>
+        <option value="">-- Выберите --</option>
+        <option value="PERLATA">PERLATA</option>
+        <option value="TACTITE">TACTITE</option>
+        <option value="LimeWash">LimeWash</option>
+        <option value="ISTRIA">ISTRIA P350</option>
+      </select>
+    </label>
+
+    <div id="materialBlock" style="display:none;">
+      <div class="inline-inputs">
+        <div>
+          <label>Кол-во (материал):
+            <input type="number" name="material_qty" id="material_qty">
+          </label>
+        </div>
+        <div>
+          <label>Стоимость (тг):
+            <input type="number" name="material_cost" id="material_cost">
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <label id="baseLabel" style="display:none;">Базовый слой:
+      <select name="base_layer" id="base_layer">
+        <!-- заполняется через JS -->
+      </select>
+    </label>
+
+    <div id="baseBlock" style="display:none;">
+      <div class="inline-inputs">
+        <div>
+          <label>Кол-во (база):
+            <input type="number" name="base_qty" id="base_qty">
+          </label>
+        </div>
+        <div>
+          <label>Стоимость (тг):
+            <input type="number" name="base_cost" id="base_cost">
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit">Сформировать PDF</button>
+  </form>
+
+  <script>
+    const materialSelect = document.getElementById("material");
+    const baseSelect = document.getElementById("base_layer");
+    const areaInput = document.getElementById("area");
+
+    const materialQty = document.getElementById("material_qty");
+    const materialCost = document.getElementById("material_cost");
+    const baseQty = document.getElementById("base_qty");
+    const baseCost = document.getElementById("base_cost");
+
+    const materialBlock = document.getElementById("materialBlock");
+    const baseLabel = document.getElementById("baseLabel");
+    const baseBlock = document.getElementById("baseBlock");
+
+    const materialData = {
+      PERLATA: { rate: 6, price: 54200, bases: ["BaseColor Matt", "Marshall Export2"] },
+      TACTITE: { rate: 9, price: 72000, bases: ["BaseColor Satine", "Dulux Bindo20"] },
+      LimeWash: { rate: 5, price: 28000, bases: [] },
+      ISTRIA: { rate: 0.8, price: 10563, bases: [] }
+    };
+
+    const baseData = {
+      "BaseColor Matt": { rate: 9, price: 27000 },
+      "BaseColor Satine": { rate: 9, price: 27000 },
+      "Dulux Bindo20": { rate: 7, price: 8000 },
+      "Marshall Export2": { rate: 7, price: 4000 }
+    };
+
+    function updateForm() {
+      const material = materialSelect.value;
+      const area = parseFloat(areaInput.value) || 0;
+
+      if (!material || !materialData[material]) return;
+
+      const mat = materialData[material];
+      const matQty = Math.ceil(area / mat.rate);
+      const matSum = matQty * mat.price;
+
+      materialQty.value = matQty;
+      materialCost.value = matSum;
+      materialBlock.style.display = "block";
+
+      // Базовый слой
+      if (mat.bases.length) {
+        baseLabel.style.display = "block";
+        baseBlock.style.display = "block";
+        baseSelect.innerHTML = "";
+        mat.bases.forEach(b => {
+          const opt = document.createElement("option");
+          opt.value = b;
+          opt.text = b;
+          baseSelect.appendChild(opt);
+        });
+        updateBaseLayer();
+      } else {
+        baseLabel.style.display = "none";
+        baseBlock.style.display = "none";
+        baseSelect.innerHTML = "";
+      }
+    }
+
+    function updateBaseLayer() {
+      const base = baseSelect.value;
+      const area = parseFloat(areaInput.value) || 0;
+      if (!base || !baseData[base]) return;
+      const baseRate = baseData[base].rate;
+      const basePrice = baseData[base].price;
+      const qty = Math.ceil(area / baseRate);
+      const sum = qty * basePrice;
+      baseQty.value = qty;
+      baseCost.value = sum;
+    }
+
+    materialSelect.addEventListener("change", updateForm);
+    areaInput.addEventListener("input", updateForm);
+    baseSelect.addEventListener("change", updateBaseLayer);
+  </script>
+</body>
+</html>
