@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Коммерческое предложение</title>
+  <style>
+    body { font-family: DejaVu Sans, sans-serif; }
+    .container { max-width: 700px; margin: auto; }
+    .logo { text-align: right; }
+    table, td, th { border: 1px solid #000; border-collapse: collapse; padding: 6px; }
+    .no-border { border: none; }
+    .right { text-align: right; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <img src="{{ url_for('static', filename='logo.png') }}" width="150">
+  </div>
+
+  {% if request.method == 'GET' %}
+    <h1>Форма коммерческого предложения</h1>
+    <form method="POST">
+      <p><label>Адрес объекта: <input name="address" required></label></p>
+      <p><label>Наименование объекта: <input name="object_name" required></label></p>
+      <p><label>Дата: <input type="date" name="date" value="{{date.today()}}" required></label></p>
+      <p><label>Площадь покрытия (м²): <input type="number" name="area" step="0.01" required></label></p>
+
+      <p><label>Материал:
+        <select name="material" required onchange="this.form.submit()">
+          <option value="">-- выберите --</option>
+          <option value="PERLATA">PERLATA</option>
+          <option value="TACTITE">TACTITE</option>
+          <option value="LimeWash">LimeWash</option>
+          <option value="ISTRIA">ISTRIA P350</option>
+        </select>
+      </label></p>
+
+      {% if request.form.get("material") in ["PERLATA", "TACTITE"] %}
+        <p><label>Базовый слой:
+          <select name="base_layer" required>
+            {% for base in materials[request.form.get("material")]["bases"] %}
+              <option value="{{ base }}">{{ base }}</option>
+            {% endfor %}
+          </select>
+        </label></p>
+      {% endif %}
+
+      <p><button type="submit">Сформировать PDF</button></p>
+    </form>
+
+  {% else %}
+    <h2>Коммерческое предложение</h2>
+    <p><strong>Наименование объекта:</strong> {{ object_name }}</p>
+    <p><strong>Адрес:</strong> {{ address }}</p>
+    <p><strong>Дата:</strong> {{ date_str }}</p>
+
+    <table width="100%">
+      <thead>
+        <tr><th>Описание</th><th>Кол-во</th><th>Цена, тг</th><th>Сумма, тг</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Материал {{ material }}</td>
+          <td class="right">{{ mat_qty }}</td>
+          <td class="right">{{ materials[material]["price"] }}</td>
+          <td class="right">{{ mat_cost }}</td>
+        </tr>
+        {% if base_qty %}
+        <tr>
+          <td>Базовый слой {{ base_layer }}</td>
+          <td class="right">{{ base_qty }}</td>
+          <td class="right">{{ base_prices[base_layer]["price"] }}</td>
+          <td class="right">{{ base_cost }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+          <td colspan="3" class="right"><strong>ИТОГО:</strong></td>
+          <td class="right"><strong>{{ total }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+</body>
+</html>
