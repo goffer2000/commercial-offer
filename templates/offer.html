@@ -3,21 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: DejaVu Sans, sans-serif; font-size: 12pt; }
+    body {
+      font-family: DejaVu Sans, sans-serif;
+      background: #fff;
+      font-size: 9pt;
+      margin: 35px;
+    }
     .logo { text-align: right; margin-bottom: 10px; }
-    .company-info { font-size: 10pt; margin-bottom: 20px; }
-    h2 { text-align: center; margin-top: 30px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
-    th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+    .company-info { font-size: 8pt; line-height: 1.4; margin-bottom: 20px; }
+    h2 { text-align: center; font-size: 11pt; margin: 15px 0 10px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 8pt;
+      table-layout: fixed;
+    }
+    th {
+      background: #f4f4f4;
+      font-weight: bold;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 4px 5px;
+      vertical-align: top;
+      word-break: break-word;
+    }
     .right { text-align: right; }
-    .wide-sum { width: 25%; }
-    .desc { margin-top: 25px; }
+    .desc { margin-top: 15px; font-size: 8pt; }
+    .section-title {
+      font-size: 9pt;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .sum-cell { width: 20%; }
+    .desc p { margin-bottom: 6px; }
   </style>
 </head>
 <body>
 
 <div class="logo">
-  <img src="{{ url_for('static', filename='logo.png') }}" width="150">
+  <img src="{{ url_for('static', filename='logo.png') }}" width="120">
 </div>
 
 <div class="company-info">
@@ -35,12 +61,12 @@
 
 <table>
   <tr>
-    <th>№</th>
-    <th>Описание</th>
-    <th>Ед. измерения</th>
-    <th>Количество, кв.м.</th>
-    <th>Стоимость единицы, тг</th>
-    <th class="wide-sum">Сумма, тг</th>
+    <th style="width: 5%;">№</th>
+    <th style="width: 42%;">Описание</th>
+    <th style="width: 10%;">Ед. изм</th>
+    <th style="width: 13%;">Кол-во, кв.м.</th>
+    <th style="width: 15%;">Цена, тг</th>
+    <th class="sum-cell">Сумма, тг</th>
   </tr>
   <tr>
     <td>1</td>
@@ -57,14 +83,14 @@
 </table>
 
 {% if base_qty %}
-<h3>Стоимость материалов для создания базового слоя</h3>
+<p class="section-title">Стоимость материалов для создания базового слоя</p>
 <table>
   <tr>
-    <th>Базовый слой: Материал {{ base_layer }}</th>
-    <th>Ед. измерения</th>
-    <th>Количество, кв.м.</th>
-    <th>Цена за ед., тг</th>
-    <th class="wide-sum">Сумма, тг</th>
+    <th style="width: 42%;">Базовый слой: Материал {{ base_layer }}</th>
+    <th style="width: 10%;">Ед. изм</th>
+    <th style="width: 13%;">Кол-во, кв.м.</th>
+    <th style="width: 15%;">Цена, тг</th>
+    <th class="sum-cell">Сумма, тг</th>
   </tr>
   <tr>
     <td></td>
@@ -76,21 +102,21 @@
 </table>
 {% endif %}
 
-<h3 class="right">ИТОГО: {{ '{:,.0f}'.format(total).replace(',', ' ') }} тг</h3>
+<h3 class="right" style="margin-top: 15px;">ИТОГО: {{ '{:,.0f}'.format(total).replace(',', ' ') }} тг</h3>
 
-<p><em>
-Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.
-</em></p>
+<p style="margin-top: 5px; font-size: 8pt;">
+  <em>Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.</em>
+</p>
 
 <div class="desc">
 {% if material == "PERLATA" %}
-<p><strong>«Perlata»</strong> – износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды, обеспечивающими создание элегантного внешнего вида декоративной отделки. «Perlata» представлена богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
+<p><strong>«Perlata»</strong> — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды, обеспечивающими создание элегантного внешнего вида декоративной отделки. «Perlata» представлена богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
 {% elif material == "TACTITE" %}
-<p><strong>«Tactite»</strong> – полупрозрачное декоративное покрытие на водной основе для создания теплого гостеприимного интерьера с эффектом «замшевой поверхности». «Tactite» представлен богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
+<p><strong>«Tactite»</strong> — полупрозрачное декоративное покрытие на водной основе для создания теплого гостеприимного интерьера с эффектом «замшевой поверхности». «Tactite» представлен богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
 {% elif material == "LimeWash" %}
 <p><strong>Материал Armourcoat «LIMEWASH»</strong> — производится с использованием гашеной извести, каолиновой глины, воды, минеральных пигментов и натуральных растительных добавок, что обеспечивает более прочное и менее меловое покрытие поверхности по сравнению с традиционными составами известкового раствора. Новая линейка, не содержащая растворителей и летучих органических соединений, основана на более чем 35-летнем опыте компании Armourcoat в разработке роскошных устойчивых отделок, получившем золотой сертификат Indoor Air Comfort.</p>
 {% elif material == "ISTRIA" %}
-<p><strong>Istria P350</strong> – это готовая к употреблению сверхтонкая мраморная штукатурная паста для создания матового покрытия устойчивого к механическим повреждениям. Istria P350 изготовлена ​​из комбинации гашеной извести, микронизированного мраморного порошка и специальных добавок. Istria P350 представляет собой почти полностью натуральный минеральный материал, достаточно твердый из-за качества и уникального "помола" извести и мрамора, используемых при его производстве.</p>
+<p><strong>Istria P350</strong> — это готовая к употреблению сверхтонкая мраморная штукатурная паста для создания матового покрытия, устойчивого к механическим повреждениям. Изготовлена из комбинации гашеной извести, микронизированного мраморного порошка и специальных добавок. Является почти полностью натуральным минеральным материалом с высокой прочностью за счёт уникального помола извести и мрамора.</p>
 {% endif %}
 </div>
 
