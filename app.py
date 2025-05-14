@@ -49,7 +49,6 @@ def form():
         return send_file(io.BytesIO(pdf_file), mimetype="application/pdf",
                          download_name="Коммерческое_предложение.pdf")
 
-    return render_template("offer.html")
-
+    return render_template("offer.html", current_date=date.today())
 if __name__ == "__main__":
     app.run(debug=True)
