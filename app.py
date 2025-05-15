@@ -40,7 +40,8 @@ def form():
                                base_qty=base_qty,
                                base_cost=base_cost,
                                total=total,
-                               date_str=date_str)
+                               date_str=date_str,
+                               area=area)
         pdf = HTML(string=html).write_pdf()
         return send_file(io.BytesIO(pdf), mimetype="application/pdf",
                          download_name="Коммерческое_предложение.pdf")
