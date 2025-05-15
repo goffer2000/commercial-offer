@@ -10,9 +10,22 @@
       margin: auto;
       padding: 20px;
     }
-    label { display: block; margin-top: 12px; }
-    .section { margin-bottom: 20px; }
-    .hidden { display: none; }
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+    input, select, button {
+      font-size: 1rem;
+      padding: 6px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -53,9 +66,7 @@
 
     <div id="base-section" class="section hidden">
       <label>Базовый слой:
-        <select name="base_layer" id="base_layer">
-          <option value="">-- Выберите --</option>
-        </select>
+        <select name="base_layer" id="base_layer"></select>
       </label>
       <label>Количество:
         <input type="number" name="base_qty" id="base_qty">
@@ -130,8 +141,26 @@
       baseSection.classList.remove("hidden");
       baseLayerSelect.innerHTML = "<option value=''>-- Выберите --</option>" +
         options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
-      baseQty.value = "";
-      baseCost.value = "";
+
+      baseLayerSelect.onchange = () => {
+        const base = baseLayerSelect.value;
+        const area = parseFloat(areaInput.value || 0);
+        let qty = 0;
+        let price = 0;
+
+        if (["Dulux Bindo20", "Marshall Export2"].includes(base)) {
+          qty = Math.ceil(area / 7);
+        } else if (["BaseColor Matt", "BaseColor Satine"].includes(base)) {
+          qty = Math.ceil(area / 9);
+        }
+
+        if (base === "BaseColor Matt" || base === "BaseColor Satine") price = 27000;
+        if (base === "Dulux Bindo20") price = 8000;
+        if (base === "Marshall Export2") price = 4000;
+
+        baseQty.value = qty;
+        baseCost.value = qty * price;
+      };
     }
 
     function hideBase() {
