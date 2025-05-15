@@ -17,32 +17,53 @@ def form():
         area = float(data.get("area", 0))
         date_str = data.get("date", str(date.today()))
 
+        # Основной материал
         mat_qty = int(data.get("material_qty", 0))
         mat_cost = int(data.get("material_cost", 0))
+        mat_price = mat_cost / mat_qty if mat_qty else 0
+
+        # Базовый слой
         base_qty = data.get("base_qty")
         base_cost = data.get("base_cost")
-
-        total = mat_cost
         if base_cost:
             base_qty = int(base_qty)
             base_cost = int(base_cost)
-            total += base_cost
+            base_price = base_cost / base_qty if base_qty else 0
         else:
-            base_qty = base_cost = None
+            base_qty = base_cost = base_price = None
 
+        # AQUAWAX
+        aquawax_qty = aquawax_cost = aquawax_price = 0
+        if material in ["LimeWash", "ISTRIA"]:
+            aquawax_qty = math.ceil(area / 16)
+            aquawax_price = 59000
+            aquawax_cost = aquawax_qty * aquawax_price
+
+        # Общая сумма
+        total = mat_cost + aquawax_cost
+        if base_cost:
+            total += base_cost
+
+        # Генерация PDF
         html = render_template("offer.html",
                                address=address,
                                object_name=object_name,
                                material=material,
                                mat_qty=mat_qty,
                                mat_cost=mat_cost,
+                               mat_price=mat_price,
                                base_layer=base_layer,
                                base_qty=base_qty,
                                base_cost=base_cost,
+                               base_price=base_price,
+                               aquawax_qty=aquawax_qty,
+                               aquawax_price=aquawax_price,
+                               aquawax_cost=aquawax_cost,
                                total=total,
                                date_str=date_str,
                                area=area)
         pdf = HTML(string=html).write_pdf()
         return send_file(io.BytesIO(pdf), mimetype="application/pdf",
                          download_name="Коммерческое_предложение.pdf")
+
     return render_template("form.html", current_date=date.today())
