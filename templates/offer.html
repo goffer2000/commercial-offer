@@ -9,11 +9,30 @@
       font-size: 9pt;
       margin: 35px 35px 35px 20px;
     }
-    .logo { text-align: left; margin-bottom: 10px; }
-    .logo img { width: 444px; height: 135px; object-fit: contain; }
-    .company-info { font-size: 8pt; line-height: 1.4; margin-bottom: 20px; }
-    h2 { text-align: center; font-size: 11pt; margin: 15px 0 5px; }
-    .sub-header { text-align: center; font-size: 9pt; margin-bottom: 10px; }
+    .logo {
+      text-align: left;
+      margin-bottom: 10px;
+    }
+    .logo img {
+      width: 444px;
+      height: 135px;
+      object-fit: contain;
+    }
+    .company-info {
+      font-size: 8pt;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+    h2 {
+      text-align: center;
+      font-size: 11pt;
+      margin: 15px 0 5px;
+    }
+    .sub-header {
+      text-align: center;
+      font-size: 9pt;
+      margin-bottom: 10px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -21,19 +40,42 @@
       font-size: 8pt;
       table-layout: fixed;
     }
-    th { background: #f4f4f4; font-weight: bold; }
+    th {
+      background: #f4f4f4;
+      font-weight: bold;
+    }
     th, td {
       border: 1px solid #ccc;
       padding: 4px 5px;
       vertical-align: top;
       word-break: break-word;
     }
-    .right { text-align: right; }
-    .desc { margin-top: 15px; font-size: 8pt; page-break-inside: avoid; min-height: 100px; }
-    .section-title { font-size: 9pt; font-weight: bold; margin-top: 10px; }
-    .bold-note { margin-top: 8px; font-weight: bold; font-size: 8pt; }
-    .sum-cell { width: 20%; }
-    .desc p { margin-bottom: 6px; }
+    .right {
+      text-align: right;
+    }
+    .desc {
+      margin-top: 15px;
+      font-size: 8pt;
+      page-break-inside: avoid;
+      page-break-before: auto;
+      min-height: 100px;
+    }
+    .section-title {
+      font-size: 9pt;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .bold-note {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 8pt;
+    }
+    .sum-cell {
+      width: 20%;
+    }
+    .desc p {
+      margin-bottom: 6px;
+    }
   </style>
 </head>
 <body>
@@ -118,19 +160,19 @@
 </p>
 
 <div class="desc">
-{% if material == "PERLATA" %}
-<p><strong>«Perlata»</strong> — износостойкое декоративное покрытие с изысканным мерцанием...</p>
-{% elif material == "TACTITE" %}
-<p><strong>«Tactite»</strong> — полупрозрачное декоративное покрытие...</p>
-{% elif material == "LimeWash" %}
-<p><strong>Материал Armourcoat «LIMEWASH»</strong> — производится с использованием гашеной извести...</p>
-{% elif material == "ISTRIA" %}
-<p><strong>Istria P350</strong> — это сверхтонкая мраморная штукатурная паста...</p>
-{% endif %}
+  {% if material == "PERLATA" %}
+  <p><strong>«Perlata»</strong> — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды, обеспечивающими создание элегантного внешнего вида декоративной отделки. «Perlata» представлена богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
+  {% elif material == "TACTITE" %}
+  <p><strong>«Tactite»</strong> — полупрозрачное декоративное покрытие на водной основе для создания теплого гостеприимного интерьера с эффектом «замшевой поверхности». «Tactite» представлен богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
+  {% elif material == "LimeWash" %}
+  <p><strong>Материал Armourcoat «LIMEWASH»</strong> — производится с использованием гашеной извести, каолиновой глины, воды, минеральных пигментов и натуральных растительных добавок, что обеспечивает более прочное и менее меловое покрытие поверхности по сравнению с традиционными составами известкового раствора. Новая линейка, не содержащая растворителей и летучих органических соединений, основана на более чем 35-летнем опыте компании Armourcoat в разработке роскошных устойчивых отделок, получившем золотой сертификат Indoor Air Comfort.</p>
+  {% elif material == "ISTRIA" %}
+  <p><strong>Istria P350</strong> — это готовая к употреблению сверхтонкая мраморная штукатурная паста для создания матового покрытия, устойчивого к механическим повреждениям. Изготовлена из комбинации гашеной извести, микронизированного мраморного порошка и специальных добавок. Является почти полностью натуральным минеральным материалом с высокой прочностью за счёт уникального помола извести и мрамора.</p>
+  {% endif %}
 
-{% if aquawax_qty %}
-<p><strong>Armourcoat Aquawax</strong> — это натуральная восковая пропитка на водной основе, включающая дополнительные добавки для лучшей защиты поверхностей, на которые она наносится. Подходит для покрытия пористых поверхностей, придавая им водонепроницаемые и грязеотталкивающие свойства.</p>
-{% endif %}
+  {% if aquawax_qty %}
+  <p><strong>Armourcoat Aquawax</strong> — это натуральная восковая пропитка на водной основе, включающая дополнительные добавки для лучшей защиты поверхностей, на которые она наносится. Подходит для покрытия пористых поверхностей, придавая им водонепроницаемые и грязеотталкивающие свойства.</p>
+  {% endif %}
 </div>
 
 </body>
