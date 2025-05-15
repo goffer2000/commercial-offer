@@ -44,6 +44,7 @@
     }
     .sum-cell { width: 20%; }
     .desc p { margin-bottom: 6px; }
+    .material-note { margin: 4px 0 10px; font-size: 8pt; }
   </style>
 </head>
 <body>
@@ -89,22 +90,27 @@
 
 {% if base_qty %}
 <p class="section-title">Стоимость материалов для создания базового слоя</p>
+
 <table>
   <tr>
-    <th style="width: 42%;">Базовый слой: Материал {{ base_layer }}</th>
+    <th style="width: 5%;">№</th>
+    <th style="width: 42%;">Описание</th>
     <th style="width: 10%;">Ед. изм</th>
     <th style="width: 13%;">Кол-во, кв.м.</th>
     <th style="width: 15%;">Цена, тг</th>
     <th class="sum-cell">Сумма, тг</th>
   </tr>
   <tr>
-    <td></td>
+    <td>1</td>
+    <td>Базовый слой</td>
     <td>литр</td>
     <td class="right">{{ base_qty }}</td>
     <td class="right">{{ '{:,.2f}'.format(base_cost / base_qty).replace(',', ' ').replace('.', ',') }}</td>
     <td class="right">{{ '{:,.2f}'.format(base_cost).replace(',', ' ').replace('.', ',') }}</td>
   </tr>
 </table>
+
+<p class="material-note">Базовый слой: Материал {{ base_layer }}</p>
 {% endif %}
 
 <h3 class="right" style="margin-top: 15px;">
