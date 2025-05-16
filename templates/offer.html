@@ -14,6 +14,18 @@
       height: 135px;
       object-fit: contain;
     }
+    .company-info {
+      font-size: 8pt;
+      margin-bottom: 20px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    .centered {
+      text-align: center;
+      font-weight: bold;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -24,61 +36,63 @@
     th, td {
       border: 1px solid #ccc;
       padding: 5px;
-      text-align: left;
       vertical-align: top;
       word-wrap: break-word;
     }
     th {
       background: #eee;
       font-weight: bold;
+      text-align: left;
     }
     .right {
       text-align: right;
+    }
+    .desc {
+      margin-top: 15px;
+      font-size: 8pt;
     }
     .bold-note {
       margin-top: 15px;
       font-weight: bold;
       font-size: 9pt;
     }
-    .section-title {
-      font-weight: bold;
-      margin-top: 20px;
-      font-size: 9pt;
-    }
-    .desc {
-      margin-top: 15px;
-      font-size: 8pt;
-    }
-    /* Настройка ширины колонок */
     th:nth-child(6), td:nth-child(6) {
-      width: 30%;
-      /* 2.5 раза шире остальных */
+      width: 25%;
+    }
+    th:nth-child(5), td:nth-child(5) {
+      width: 20%;
     }
     th:nth-child(2), td:nth-child(2) {
-      width: 40%;
+      width: 35%;
     }
     th:nth-child(1), td:nth-child(1) {
       width: 5%;
     }
     th:nth-child(3), td:nth-child(3),
-    th:nth-child(4), td:nth-child(4),
-    th:nth-child(5), td:nth-child(5) {
+    th:nth-child(4), td:nth-child(4) {
       width: 7.5%;
     }
   </style>
 </head>
 <body>
 
+<div class="company-info">
+  ТОО «Фактура», БИН 151240007938, место нахождения Казахстан, г. Астана, ул. Амман, 10<br>
+  <strong>Директор по продажам:</strong> Бурьян Катерина<br>
+  <strong>моб.тел:</strong> +7 705 657 67 57<br>
+  <strong>e-mail:</strong> es@faktura.com.kz
+</div>
+
+<p><strong>Адрес объекта:</strong> {{ address }}</p>
+<p><strong>Наименование объекта:</strong> {{ object_name }}</p>
+
 <div class="logo">
-  <img src="/static/logo.png" alt="ARMOURCOAT Логотип" />
+  <img src="/static/logo.png" />
 </div>
 
 <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
-<p><strong>Адрес объекта:</strong> {{ address }}</p>
-<p><strong>Наименование объекта:</strong> {{ object_name }}</p>
-<p><strong>Площадь покрытия:</strong> {{ area }} м²</p>
+<p class="centered">Площадь покрытия: {{ area }} м²</p>
 
-<h3 class="section-title">Основной материал</h3>
 <table>
   <tr>
     <th>№</th>
@@ -109,7 +123,6 @@
 </table>
 
 {% if base_layer %}
-<h3 class="section-title">Базовый слой</h3>
 <table>
   <tr>
     <th>№</th>
@@ -148,16 +161,9 @@
   </tr>
   {% endif %}
 </table>
-
-<div class="desc">
-  {% if base_layer in ['BaseColor Matt', 'BaseColor Satine'] %}
-  <p><strong>«BaseColor»</strong> – слой основания на основе воды с превосходной адгезией и матовостью, которая представляет собой неотъемлемую часть систем декоративного покрытия «Perlata» и «Tactite».</p>
-  {% endif %}
-</div>
 {% endif %}
 
 {% if include_work %}
-<h3 class="section-title">Работы</h3>
 <table>
   <tr>
     <th>№</th>
@@ -180,8 +186,27 @@
 
 <p class="bold-note">Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.</p>
 
-<h3 class="section-title">ИТОГО:</h3>
-<p><strong>{{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</strong></p>
+<p><strong>Итого: {{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</strong></p>
+
+<div class="desc">
+  {% if material == "PERLATA" %}
+  <p><strong>Perlata</strong> — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды.</p>
+  {% elif material == "TACTITE" %}
+  <p><strong>Tactite</strong> — полупрозрачное покрытие с эффектом замши, представленное широкой цветовой палитрой.</p>
+  {% elif material == "LimeWash" %}
+  <p><strong>LIMEWASH</strong> — натуральное покрытие на известковой основе с минеральными пигментами, не содержит ЛОС.</p>
+  {% elif material == "ISTRIA" %}
+  <p><strong>Istria P350</strong> — мраморная штукатурка с высокой прочностью, изготовленная из извести и мрамора.</p>
+  {% endif %}
+
+  {% if aquawax_qty %}
+  <p><strong>Armourcoat AQUAWAX</strong> — восковая пропитка на водной основе, придающая водоотталкивающие свойства поверхностям.</p>
+  {% endif %}
+
+  {% if base_layer in ['BaseColor Matt', 'BaseColor Satine'] %}
+  <p><strong>BaseColor</strong> — слой основания на водной основе с отличной адгезией и матовостью, используемый в системах Perlata и Tactite.</p>
+  {% endif %}
+</div>
 
 </body>
 </html>
