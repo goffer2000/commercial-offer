@@ -2,26 +2,20 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Создание коммерческого предложения</title>
+  <title>Форма коммерческого предложения</title>
   <style>
     body {
       font-family: sans-serif;
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
+      margin: 40px;
     }
     label {
       display: block;
-      margin-top: 12px;
+      margin-top: 10px;
     }
-    input, select, button {
-      font-size: 1rem;
-      padding: 6px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .section {
-      margin-bottom: 20px;
+    input, select {
+      padding: 5px;
+      margin-top: 4px;
+      width: 300px;
     }
     .hidden {
       display: none;
@@ -29,209 +23,229 @@
   </style>
 </head>
 <body>
-  <h1>Форма коммерческого предложения</h1>
-  <form method="POST">
-    <div class="section">
-      <label>Адрес объекта:
-        <input type="text" name="address" required>
-      </label>
-      <label>Наименование объекта:
-        <input type="text" name="object_name" required>
-      </label>
-      <label>Дата:
-        <input type="date" name="date" value="{{ current_date }}" required>
-      </label>
-      <label>Площадь покрытия (м²):
-        <input type="number" name="area" id="area" step="0.1" required>
-      </label>
-    </div>
+  <h2>Форма коммерческого предложения</h2>
+  <form method="post">
+    <label>Адрес объекта:
+      <input name="address" required>
+    </label>
 
-    <div class="section">
-      <label>Материал:
-        <select name="material" id="material" required>
+    <label>Наименование объекта:
+      <input name="object_name" required>
+    </label>
+
+    <label>Дата:
+      <input type="date" name="date" value="{{ current_date }}" required>
+    </label>
+
+    <label>Площадь покрытия (м²):
+      <input name="area" id="area" type="number" step="0.1" required>
+    </label>
+
+    <label>Материал:
+      <select name="material" id="material" required>
+        <option value="">-- Выберите --</option>
+        <option value="PERLATA">PERLATA</option>
+        <option value="TACTITE">TACTITE</option>
+        <option value="LimeWash">LimeWash</option>
+        <option value="ISTRIA">ISTRIA P350</option>
+      </select>
+    </label>
+
+    <div id="baseLayerGroup" class="hidden">
+      <label>Базовый слой:
+        <select name="base_layer" id="base_layer">
           <option value="">-- Выберите --</option>
-          <option value="PERLATA">PERLATA</option>
-          <option value="TACTITE">TACTITE</option>
-          <option value="LimeWash">LimeWash</option>
-          <option value="ISTRIA">ISTRIA</option>
         </select>
       </label>
       <label>Количество:
-        <input type="number" name="material_qty" id="material_qty" required>
+        <input name="base_qty" id="base_qty" type="number" step="1">
       </label>
-      <label>Стоимость:
-        <input type="number" name="material_cost" id="material_cost" required>
+      <label>Стоимость (тг):
+        <input name="base_cost" id="base_cost" type="number" step="1">
       </label>
     </div>
 
-    <div id="base-section" class="section hidden">
-      <label>Базовый слой:
-        <select name="base_layer" id="base_layer"></select>
-      </label>
+    <div id="aquawaxGroup" class="hidden">
+      <p><strong>AQUAWAX:</strong></p>
       <label>Количество:
-        <input type="number" name="base_qty" id="base_qty">
+        <input name="aquawax_qty" id="aquawax_qty" type="number" step="1">
       </label>
-      <label>Стоимость:
-        <input type="number" name="base_cost" id="base_cost">
-      </label>
-    </div>
-
-    <div id="aqua-section" class="section hidden">
-      <strong>AQUAWAX</strong>
-      <label>Количество:
-        <input type="number" name="aquawax_qty" id="aquawax_qty" readonly>
-      </label>
-      <label>Стоимость:
-        <input type="number" name="aquawax_cost" id="aquawax_cost" readonly>
+      <label>Стоимость (тг):
+        <input name="aquawax_cost" id="aquawax_cost" type="number" step="1">
       </label>
     </div>
 
-    <div class="section">
-      <label><input type="checkbox" name="include_work" id="include_work"> Работы</label>
-    </div>
+    <label>Количество основного материала:
+      <input name="material_qty" id="material_qty" type="number" step="1" required>
+    </label>
 
-    <div id="work-section" class="section hidden">
+    <label>Стоимость (тг):
+      <input name="material_cost" id="material_cost" type="number" step="1" required>
+    </label>
+
+    <label>
+      <input type="checkbox" name="include_work" id="include_work"> Работы
+    </label>
+
+    <div id="workFields" class="hidden">
       <label>Стоимость работ за 1 кв.м.:
-        <input type="number" name="work_price" id="work_price" step="0.01" value="7000.00">
+        <input name="work_price" id="work_price" type="number" step="1" value="7000">
       </label>
+
       <label>Доп. расходные материалы (тг):
-        <input type="number" name="extra_materials" id="extra_materials" step="1">
+        <input name="extra_cost" id="extra_cost" type="number" step="1">
       </label>
+
       <label>Грунтовка (тг):
-        <input type="number" name="primer" id="primer" step="1">
+        <input name="primer_cost" id="primer_cost" type="number" step="1">
       </label>
     </div>
 
+    <br>
     <button type="submit">Сформировать PDF</button>
   </form>
 
   <script>
-    const materialSelect = document.getElementById("material");
-    const baseLayerSelect = document.getElementById("base_layer");
-    const baseSection = document.getElementById("base-section");
-    const aquaSection = document.getElementById("aqua-section");
     const areaInput = document.getElementById("area");
+    const materialSelect = document.getElementById("material");
+    const baseLayerGroup = document.getElementById("baseLayerGroup");
+    const baseLayerSelect = document.getElementById("base_layer");
+    const baseQty = document.getElementById("base_qty");
+    const baseCost = document.getElementById("base_cost");
 
     const materialQty = document.getElementById("material_qty");
     const materialCost = document.getElementById("material_cost");
-    const baseQty = document.getElementById("base_qty");
-    const baseCost = document.getElementById("base_cost");
-    const aquaQty = document.getElementById("aquawax_qty");
-    const aquaCost = document.getElementById("aquawax_cost");
+
+    const aquawaxGroup = document.getElementById("aquawaxGroup");
+    const aquawaxQty = document.getElementById("aquawax_qty");
+    const aquawaxCost = document.getElementById("aquawax_cost");
 
     const includeWork = document.getElementById("include_work");
-    const workSection = document.getElementById("work-section");
+    const workFields = document.getElementById("workFields");
     const workPrice = document.getElementById("work_price");
-    const extraMaterials = document.getElementById("extra_materials");
-    const primer = document.getElementById("primer");
+    const extraCost = document.getElementById("extra_cost");
+    const primerCost = document.getElementById("primer_cost");
 
-    function updateForm() {
+    const PRICES = {
+      PERLATA: 54200,
+      TACTITE: 72000,
+      LimeWash: 28000,
+      ISTRIA: 10563,
+      base_27000: ["BaseColor Matt", "BaseColor Satine"],
+      base_8000: ["Dulux Bindo20"],
+      base_4000: ["Marshall Export2"],
+      AQUAWAX: 59000
+    };
+
+    const BASE_OPTIONS = {
+      PERLATA: ["BaseColor Matt", "Marshall Export2"],
+      TACTITE: ["BaseColor Satine", "Dulux Bindo20"]
+    };
+
+    function updateFields() {
+      const area = parseFloat(areaInput.value) || 0;
       const material = materialSelect.value;
-      const area = parseFloat(areaInput.value || 0);
 
-      // Основной материал
-      let qty = 0, cost = 0;
-      if (material === "PERLATA") {
-        qty = Math.ceil(area / 6);
-        cost = qty * 54200;
-        showBase(["BaseColor Matt", "Marshall Export2"]);
-        hideAqua();
-      } else if (material === "TACTITE") {
-        qty = Math.ceil(area / 9);
-        cost = qty * 72000;
-        showBase(["BaseColor Satine", "Dulux Bindo20"]);
-        hideAqua();
-      } else if (material === "LimeWash") {
-        qty = Math.ceil(area / 5);
-        cost = qty * 28000;
-        hideBase();
-        showAqua(area);
-      } else if (material === "ISTRIA") {
-        qty = Math.ceil(area / 0.8);
-        cost = qty * 10563;
-        hideBase();
-        showAqua(area);
+      if (["PERLATA", "TACTITE"].includes(material)) {
+        baseLayerGroup.classList.remove("hidden");
+        baseLayerSelect.innerHTML = `<option value="">-- Выберите --</option>` +
+          BASE_OPTIONS[material].map(opt => `<option value="${opt}">${opt}</option>`).join('');
       } else {
-        hideBase();
-        hideAqua();
+        baseLayerGroup.classList.add("hidden");
       }
 
-      materialQty.value = qty;
-      materialCost.value = cost;
+      // Main material qty + cost
+      let ratio = 1;
+      if (material === "PERLATA") ratio = 6;
+      if (material === "TACTITE") ratio = 9;
+      if (material === "LimeWash") ratio = 5;
+      if (material === "ISTRIA") ratio = 0.8;
 
-      if (includeWork.checked) updateWorkFields(area);
-    }
+      const matQty = Math.ceil(area / ratio);
+      const matPrice = PRICES[material] || 0;
+      materialQty.value = matQty;
+      materialCost.value = matQty * matPrice;
 
-    function showBase(options) {
-      baseSection.classList.remove("hidden");
-      baseLayerSelect.innerHTML = "<option value=''>-- Выберите --</option>" +
-        options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
-      baseQty.value = "";
-      baseCost.value = "";
-    }
-
-    function hideBase() {
-      baseSection.classList.add("hidden");
-      baseLayerSelect.innerHTML = "";
-      baseQty.value = "";
-      baseCost.value = "";
-    }
-
-    function showAqua(area) {
-      aquaSection.classList.remove("hidden");
-      const qty = Math.ceil(area / 16);
-      const price = 59000;
-      aquaQty.value = qty;
-      aquaCost.value = qty * price;
-    }
-
-    function hideAqua() {
-      aquaSection.classList.add("hidden");
-      aquaQty.value = "";
-      aquaCost.value = "";
-    }
-
-    function updateWorkFields(area) {
-      const extra = Math.ceil(area / 35) * 12000;
-      const grund = (area / 150) * 2500;
-      extraMaterials.value = Math.round(extra);
-      primer.value = Math.round(grund);
-    }
-
-    includeWork.addEventListener("change", () => {
-      if (includeWork.checked) {
-        workSection.classList.remove("hidden");
-        updateWorkFields(parseFloat(areaInput.value || 0));
+      // Aquawax
+      if (material === "LimeWash" || material === "ISTRIA") {
+        aquawaxGroup.classList.remove("hidden");
+        const awQty = Math.ceil(area / 16);
+        aquawaxQty.value = awQty;
+        aquawaxCost.value = awQty * PRICES.AQUAWAX;
       } else {
-        workSection.classList.add("hidden");
-        workPrice.value = "7000.00";
-        extraMaterials.value = "";
-        primer.value = "";
+        aquawaxGroup.classList.add("hidden");
+        aquawaxQty.value = "";
+        aquawaxCost.value = "";
       }
-    });
 
-    baseLayerSelect.addEventListener("change", () => {
+      // Base layer logic
+      updateBaseLayer();
+      updateWorkFields();
+    }
+
+    function updateBaseLayer() {
       const base = baseLayerSelect.value;
-      const area = parseFloat(areaInput.value || 0);
-      let qty = 0;
-      let price = 0;
-
-      if (["Dulux Bindo20", "Marshall Export2"].includes(base)) {
-        qty = Math.ceil(area / 7);
-      } else if (["BaseColor Matt", "BaseColor Satine"].includes(base)) {
-        qty = Math.ceil(area / 9);
-      }
-
-      if (base === "BaseColor Matt" || base === "BaseColor Satine") price = 27000;
-      if (base === "Dulux Bindo20") price = 8000;
-      if (base === "Marshall Export2") price = 4000;
-
+      const area = parseFloat(areaInput.value) || 0;
+      let ratio = 1;
+      if (["Dulux Bindo20", "Marshall Export2"].includes(base)) ratio = 7;
+      if (["BaseColor Satine", "BaseColor Matt"].includes(base)) ratio = 9;
+      const qty = Math.ceil(area / ratio);
       baseQty.value = qty;
-      baseCost.value = qty * price;
-    });
 
-    materialSelect.addEventListener("change", updateForm);
-    areaInput.addEventListener("input", updateForm);
+      let price = 0;
+      if (PRICES.base_27000.includes(base)) price = 27000;
+      if (PRICES.base_8000.includes(base)) price = 8000;
+      if (PRICES.base_4000.includes(base)) price = 4000;
+
+      baseCost.value = qty * price;
+    }
+
+    function updateWorkFields() {
+      const area = parseFloat(areaInput.value) || 0;
+      if (includeWork.checked) {
+        workFields.classList.remove("hidden");
+
+        const extraQty = Math.ceil(area / 35);
+        extraCost.value = extraQty * 12000;
+
+        const primerQty = Math.ceil(area / 16);
+        primerCost.value = primerQty * 2500;
+      } else {
+        workFields.classList.add("hidden");
+        workPrice.value = "";
+        extraCost.value = "";
+        primerCost.value = "";
+      }
+    }
+
+    // Реакции на изменение суммы и количества вручную
+    function setupLinkedCalc(qtyField, costField, unitPrice) {
+      qtyField.addEventListener("input", () => {
+        const qty = parseFloat(qtyField.value) || 0;
+        costField.value = Math.round(qty * unitPrice);
+      });
+      costField.addEventListener("input", () => {
+        const cost = parseFloat(costField.value) || 0;
+        qtyField.value = Math.ceil(cost / unitPrice);
+      });
+    }
+
+    setupLinkedCalc(materialQty, materialCost, PRICES.PERLATA); // заменится позже
+    setupLinkedCalc(aquawaxQty, aquawaxCost, PRICES.AQUAWAX);
+    setupLinkedCalc(baseQty, baseCost, 1); // base пересчитывается отдельно
+    setupLinkedCalc(
+      document.createElement("input"), // dummy
+      extraCost, 12000
+    );
+    setupLinkedCalc(
+      document.createElement("input"),
+      primerCost, 2500
+    );
+
+    areaInput.addEventListener("input", updateFields);
+    materialSelect.addEventListener("change", updateFields);
+    baseLayerSelect.addEventListener("change", updateBaseLayer);
+    includeWork.addEventListener("change", updateWorkFields);
   </script>
 </body>
 </html>
