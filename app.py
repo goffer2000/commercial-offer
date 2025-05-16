@@ -32,25 +32,24 @@ def form():
         else:
             base_qty = base_cost = base_price = None
 
-        # AQUAWAX
+        # Aquawax
         aquawax_qty = aquawax_cost = aquawax_price = 0
         if material in ["LimeWash", "ISTRIA"]:
-            aquawax_qty = math.ceil(area / 16)
-            aquawax_price = 59000
-            aquawax_cost = aquawax_qty * aquawax_price
+            aquawax_qty = int(data.get("aquawax_qty", 0))
+            aquawax_cost = int(data.get("aquawax_cost", 0))
+            aquawax_price = aquawax_cost / aquawax_qty if aquawax_qty else 0
 
         # Работы
         include_work = 'include_work' in data
         work_price = float(data.get("work_price", 0))
         work_sum = area * work_price if include_work else 0
 
-        # Кол-во и сумма доп. материалов и грунтовки
-        extra_qty = primer_qty = extra_cost = primer_cost = 0
-        if include_work:
-            extra_qty = math.ceil(area / 35)
-            primer_qty = math.ceil(area / 16)
-            extra_cost = extra_qty * 12000
-            primer_cost = primer_qty * 2500
+        # Доп. материалы и грунтовка (сумма вводится, цена фикс)
+        extra_cost = float(data.get("extra_cost", 0))
+        primer_cost = float(data.get("primer_cost", 0))
+
+        extra_qty = int(extra_cost / 12000) if extra_cost else 0
+        primer_qty = int(primer_cost / 2500) if primer_cost else 0
 
         # Общая сумма
         total = mat_cost + aquawax_cost
@@ -68,7 +67,6 @@ def form():
         }
         material_name = material_full_names.get(material, material)
 
-        # Генерация PDF
         html = render_template("offer.html",
                                address=address,
                                object_name=object_name,
