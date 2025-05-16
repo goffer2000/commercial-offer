@@ -57,7 +57,6 @@
       margin-top: 15px;
       font-size: 8pt;
       page-break-inside: avoid;
-      page-break-before: auto;
       min-height: 100px;
     }
     .section-title {
@@ -155,17 +154,17 @@
     <td>2</td>
     <td>Дополнительные расходные материалы</td>
     <td>компл</td>
-    <td class="right">-</td>
+    <td class="right">{{ extra_qty }}</td>
     <td class="right">12 000,00</td>
-    <td class="right">{{ '{:,.2f}'.format(extra_materials).replace(',', ' ').replace('.', ',') }}</td>
+    <td class="right">{{ '{:,.2f}'.format(extra_cost).replace(',', ' ').replace('.', ',') }}</td>
   </tr>
   <tr>
     <td>3</td>
     <td>Грунтовка</td>
     <td>литр</td>
-    <td class="right">-</td>
+    <td class="right">{{ primer_qty }}</td>
     <td class="right">2 500,00</td>
-    <td class="right">{{ '{:,.2f}'.format(primer).replace(',', ' ').replace('.', ',') }}</td>
+    <td class="right">{{ '{:,.2f}'.format(primer_cost).replace(',', ' ').replace('.', ',') }}</td>
   </tr>
   {% endif %}
 </table>
