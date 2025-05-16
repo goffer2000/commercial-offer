@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <style>
     body {
       font-family: DejaVu Sans, sans-serif;
@@ -26,6 +26,7 @@
       padding: 5px;
       text-align: left;
       vertical-align: top;
+      word-wrap: break-word;
     }
     th {
       background: #eee;
@@ -34,26 +35,42 @@
     .right {
       text-align: right;
     }
-    .section-title {
-      font-weight: bold;
-      margin-top: 20px;
-      font-size: 9pt;
-    }
     .bold-note {
       margin-top: 15px;
       font-weight: bold;
+      font-size: 9pt;
+    }
+    .section-title {
+      font-weight: bold;
+      margin-top: 20px;
       font-size: 9pt;
     }
     .desc {
       margin-top: 15px;
       font-size: 8pt;
     }
+    /* Настройка ширины колонок */
+    th:nth-child(6), td:nth-child(6) {
+      width: 30%;
+      /* 2.5 раза шире остальных */
+    }
+    th:nth-child(2), td:nth-child(2) {
+      width: 40%;
+    }
+    th:nth-child(1), td:nth-child(1) {
+      width: 5%;
+    }
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(4), td:nth-child(4),
+    th:nth-child(5), td:nth-child(5) {
+      width: 7.5%;
+    }
   </style>
 </head>
 <body>
 
 <div class="logo">
-  <img src="/static/logo.png">
+  <img src="/static/logo.png" alt="ARMOURCOAT Логотип" />
 </div>
 
 <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
@@ -64,16 +81,16 @@
 <h3 class="section-title">Основной материал</h3>
 <table>
   <tr>
-    <th style="width: 5%;">№</th>
-    <th style="width: 42%;">Описание</th>
-    <th style="width: 10%;">Ед. изм</th>
-    <th style="width: 13%;">Кол-во</th>
-    <th style="width: 15%;">Цена, тг</th>
-    <th class="sum-cell">Сумма, тг</th>
+    <th>№</th>
+    <th>Описание</th>
+    <th>Ед. изм</th>
+    <th>Кол-во</th>
+    <th>Цена, тг</th>
+    <th>Сумма, тг</th>
   </tr>
   <tr>
     <td>1</td>
-    <td>Материал Armourcoat "{{ material_name }}"</td>
+    <td>Материал Armourcoat "<strong>{{ material_name }}</strong>"</td>
     <td>{% if material == "ISTRIA" %}кг{% else %}л{% endif %}</td>
     <td class="right">{{ mat_qty }}</td>
     <td class="right">{{ '{:,.2f}'.format(mat_price).replace(',', ' ').replace('.', ',') }}</td>
@@ -85,7 +102,7 @@
     <td>Доп. покрытие: Armourcoat AQUAWAX</td>
     <td>л</td>
     <td class="right">{{ aquawax_qty }}</td>
-    <td class="right">{{ '{:,.2f}'.format(aquawax_price).replace(',', ' ').replace('.', ',') }}</td>
+    <td class="right">59 000,00</td>
     <td class="right">{{ '{:,.2f}'.format(aquawax_cost).replace(',', ' ').replace('.', ',') }}</td>
   </tr>
   {% endif %}
@@ -95,16 +112,16 @@
 <h3 class="section-title">Базовый слой</h3>
 <table>
   <tr>
-    <th style="width: 5%;">№</th>
-    <th style="width: 42%;">Описание</th>
-    <th style="width: 10%;">Ед. изм</th>
-    <th style="width: 13%;">Кол-во</th>
-    <th style="width: 15%;">Цена, тг</th>
-    <th class="sum-cell">Сумма, тг</th>
+    <th>№</th>
+    <th>Описание</th>
+    <th>Ед. изм</th>
+    <th>Кол-во</th>
+    <th>Цена, тг</th>
+    <th>Сумма, тг</th>
   </tr>
   <tr>
     <td>1</td>
-    <td>Базовый слой: Материал {{ base_layer }}</td>
+    <td>Базовый слой: Материал <strong>{{ base_layer }}</strong></td>
     <td>л</td>
     <td class="right">{{ base_qty }}</td>
     <td class="right">{{ '{:,.2f}'.format(base_price).replace(',', ' ').replace('.', ',') }}</td>
@@ -131,18 +148,24 @@
   </tr>
   {% endif %}
 </table>
+
+<div class="desc">
+  {% if base_layer in ['BaseColor Matt', 'BaseColor Satine'] %}
+  <p><strong>«BaseColor»</strong> – слой основания на основе воды с превосходной адгезией и матовостью, которая представляет собой неотъемлемую часть систем декоративного покрытия «Perlata» и «Tactite».</p>
+  {% endif %}
+</div>
 {% endif %}
 
 {% if include_work %}
 <h3 class="section-title">Работы</h3>
 <table>
   <tr>
-    <th style="width: 5%;">№</th>
-    <th style="width: 42%;">Описание</th>
-    <th style="width: 10%;">Ед. изм</th>
-    <th style="width: 13%;">Кол-во</th>
-    <th style="width: 15%;">Цена, тг</th>
-    <th class="sum-cell">Сумма, тг</th>
+    <th>№</th>
+    <th>Описание</th>
+    <th>Ед. изм</th>
+    <th>Кол-во</th>
+    <th>Цена, тг</th>
+    <th>Сумма, тг</th>
   </tr>
   <tr>
     <td>1</td>
@@ -155,30 +178,10 @@
 </table>
 {% endif %}
 
+<p class="bold-note">Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.</p>
+
 <h3 class="section-title">ИТОГО:</h3>
 <p><strong>{{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</strong></p>
-
-<div class="desc">
-  {% if material == "PERLATA" %}
-  <p>«Perlata» — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды.</p>
-  <p>«Perlata» представлена богатой палитрой цветов, подходящей как для современных, так и для классических интерьеров.</p>
-  {% elif material == "TACTITE" %}
-  <p>«Tactite» — полупрозрачное декоративное покрытие на водной основе с эффектом замши.</p>
-  <p>Подходит для тёплых интерьеров, представлена широкая цветовая палитра.</p>
-  {% elif material == "LimeWash" %}
-  <p>Материал Armourcoat «LIMEWASH» — натуральное известковое покрытие на водной основе с каолином и пигментами.</p>
-  <p>Линейка не содержит ЛОС, имеет сертификат Indoor Air Comfort Gold.</p>
-  {% elif material == "ISTRIA" %}
-  <p>Istria P350 — готовая сверхтонкая мраморная штукатурка из извести и микронизированного мрамора.</p>
-  <p>Практически полностью натуральный материал с высокой прочностью.</p>
-  {% endif %}
-
-  {% if aquawax_qty %}
-  <p><strong>Armourcoat AQUAWAX</strong> — натуральная восковая пропитка на водной основе с добавками для защиты пористых поверхностей от влаги и загрязнений.</p>
-  {% endif %}
-</div>
-
-<p class="bold-note">Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.</p>
 
 </body>
 </html>
