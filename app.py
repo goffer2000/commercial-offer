@@ -39,10 +39,19 @@ def form():
             aquawax_price = 59000
             aquawax_cost = aquawax_qty * aquawax_price
 
+        # Работы
+        include_work = 'include_work' in data
+        work_price = float(data.get("work_price", 0))
+        extra_materials = int(data.get("extra_materials", 0))
+        primer = int(data.get("primer", 0))
+        work_sum = area * work_price if include_work else 0
+
         # Общая сумма
         total = mat_cost + aquawax_cost
         if base_cost:
             total += base_cost
+        if include_work:
+            total += work_sum + extra_materials + primer
 
         # Названия материалов
         material_full_names = {
@@ -69,6 +78,11 @@ def form():
                                aquawax_qty=aquawax_qty,
                                aquawax_price=aquawax_price,
                                aquawax_cost=aquawax_cost,
+                               include_work=include_work,
+                               work_price=work_price,
+                               work_sum=work_sum,
+                               extra_materials=extra_materials,
+                               primer=primer,
                                total=total,
                                date_str=date_str,
                                area=area)
