@@ -97,7 +97,7 @@
 
 <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
 <div class="sub-header">
-  Площадь стен для покрытия материалом Armourcoat "{{ material }}" : <strong>{{ area }} м²</strong>
+  Площадь стен для покрытия материалом Armourcoat "{{ material }}": <strong>{{ area }} м²</strong>
 </div>
 
 <table>
@@ -129,8 +129,50 @@
   {% endif %}
 </table>
 
-{% if base_qty %}
+{% if base_qty or include_work %}
 <p class="section-title">Стоимость материалов для создания базового слоя</p>
+<table>
+  <tr>
+    <th style="width: 5%;">№</th>
+    <th style="width: 42%;">Описание</th>
+    <th style="width: 10%;">Ед. изм</th>
+    <th style="width: 13%;">Кол-во</th>
+    <th style="width: 15%;">Цена, тг</th>
+    <th class="sum-cell">Сумма, тг</th>
+  </tr>
+  {% if base_qty %}
+  <tr>
+    <td>1</td>
+    <td>Базовый слой: Материал {{ base_layer }}</td>
+    <td>литр</td>
+    <td class="right">{{ base_qty }}</td>
+    <td class="right">{{ '{:,.2f}'.format(base_price).replace(',', ' ').replace('.', ',') }}</td>
+    <td class="right">{{ '{:,.2f}'.format(base_cost).replace(',', ' ').replace('.', ',') }}</td>
+  </tr>
+  {% endif %}
+  {% if include_work %}
+  <tr>
+    <td>2</td>
+    <td>Дополнительные расходные материалы</td>
+    <td>компл</td>
+    <td class="right">-</td>
+    <td class="right">12 000,00</td>
+    <td class="right">{{ '{:,.2f}'.format(extra_materials).replace(',', ' ').replace('.', ',') }}</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Грунтовка</td>
+    <td>литр</td>
+    <td class="right">-</td>
+    <td class="right">2 500,00</td>
+    <td class="right">{{ '{:,.2f}'.format(primer).replace(',', ' ').replace('.', ',') }}</td>
+  </tr>
+  {% endif %}
+</table>
+{% endif %}
+
+{% if include_work %}
+<p class="section-title">Стоимость работ</p>
 <table>
   <tr>
     <th style="width: 5%;">№</th>
@@ -142,11 +184,11 @@
   </tr>
   <tr>
     <td>1</td>
-    <td>Базовый слой: Материал {{ base_layer }}</td>
-    <td>литр</td>
-    <td class="right">{{ base_qty }}</td>
-    <td class="right">{{ '{:,.2f}'.format(base_price).replace(',', ' ').replace('.', ',') }}</td>
-    <td class="right">{{ '{:,.2f}'.format(base_cost).replace(',', ' ').replace('.', ',') }}</td>
+    <td>Работы по нанесению декоративного покрытия ARMOURCOAT</td>
+    <td>кв.м.</td>
+    <td class="right">{{ area }}</td>
+    <td class="right">{{ '{:,.2f}'.format(work_price).replace(',', ' ').replace('.', ',') }}</td>
+    <td class="right">{{ '{:,.2f}'.format(work_sum).replace(',', ' ').replace('.', ',') }}</td>
   </tr>
 </table>
 {% endif %}
