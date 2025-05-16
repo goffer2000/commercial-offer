@@ -52,15 +52,25 @@
       </select>
     </label>
 
+    <label>Количество основного материала (л):
+      <input name="material_qty" id="material_qty" type="number" step="1" required>
+    </label>
+
+    <label>Стоимость (тг):
+      <input name="material_cost" id="material_cost" type="number" step="1" required>
+    </label>
+
     <div id="baseLayerGroup" class="hidden">
       <label>Базовый слой:
         <select name="base_layer" id="base_layer">
           <option value="">-- Выберите --</option>
         </select>
       </label>
-      <label>Количество:
+
+      <label>Количество (л):
         <input name="base_qty" id="base_qty" type="number" step="1">
       </label>
+
       <label>Стоимость (тг):
         <input name="base_cost" id="base_cost" type="number" step="1">
       </label>
@@ -68,21 +78,13 @@
 
     <div id="aquawaxGroup" class="hidden">
       <p><strong>AQUAWAX:</strong></p>
-      <label>Количество:
+      <label>Количество (л):
         <input name="aquawax_qty" id="aquawax_qty" type="number" step="1">
       </label>
       <label>Стоимость (тг):
         <input name="aquawax_cost" id="aquawax_cost" type="number" step="1">
       </label>
     </div>
-
-    <label>Количество основного материала:
-      <input name="material_qty" id="material_qty" type="number" step="1" required>
-    </label>
-
-    <label>Стоимость (тг):
-      <input name="material_cost" id="material_cost" type="number" step="1" required>
-    </label>
 
     <label>
       <input type="checkbox" name="include_work" id="include_work"> Работы
@@ -166,14 +168,14 @@
       const matQty = Math.ceil(area / ratio);
       const matPrice = PRICES[material] || 0;
       materialQty.value = matQty;
-      materialCost.value = matQty * matPrice;
+      materialCost.value = Math.round(matQty * matPrice);
 
       // Aquawax
       if (material === "LimeWash" || material === "ISTRIA") {
         aquawaxGroup.classList.remove("hidden");
         const awQty = Math.ceil(area / 16);
         aquawaxQty.value = awQty;
-        aquawaxCost.value = awQty * PRICES.AQUAWAX;
+        aquawaxCost.value = Math.round(awQty * PRICES.AQUAWAX);
       } else {
         aquawaxGroup.classList.add("hidden");
         aquawaxQty.value = "";
@@ -198,7 +200,9 @@
       if (PRICES.base_8000.includes(base)) price = 8000;
       if (PRICES.base_4000.includes(base)) price = 4000;
 
-      baseCost.value = qty * price;
+      baseCost.value = Math.round(qty * price);
+
+      setupSync(baseQty, baseCost, price);
     }
 
     function updateWorkFields() {
@@ -219,9 +223,8 @@
       }
     }
 
-    // Привязка: изменение количества → сумма
-    //           изменение суммы → количество
     function setupSync(qtyField, costField, fixedPrice) {
+      if (!qtyField || !costField) return;
       qtyField.addEventListener("input", () => {
         const qty = parseFloat(qtyField.value) || 0;
         costField.value = Math.round(qty * fixedPrice);
@@ -231,12 +234,6 @@
         qtyField.value = Math.ceil(cost / fixedPrice);
       });
     }
-
-    setupSync(materialQty, materialCost, PRICES.PERLATA); // заменим позже
-    setupSync(aquawaxQty, aquawaxCost, PRICES.AQUAWAX);
-    setupSync(baseQty, baseCost, 1); // заменяется логикой выше
-    setupSync(document.createElement("input"), extraCost, 12000);
-    setupSync(document.createElement("input"), primerCost, 2500);
 
     areaInput.addEventListener("input", updateFields);
     materialSelect.addEventListener("change", updateFields);
