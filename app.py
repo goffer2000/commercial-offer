@@ -67,7 +67,7 @@ material_name = material_full_names.get(material, material)
                                aquawax_cost=aquawax_cost,
                                total=total,
                                date_str=date_str,
-                               area=area
+                               area=area,
                                material_name=material_name)
         pdf = HTML(string=html, base_url=request.host_url).write_pdf()
         return send_file(io.BytesIO(pdf), mimetype="application/pdf",
