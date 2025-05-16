@@ -5,29 +5,14 @@
   <style>
     body {
       font-family: DejaVu Sans, sans-serif;
-      background: #fff;
       font-size: 9pt;
-      margin: 35px 35px 35px 20px;
+      background: white;
+      margin: 30px;
     }
     .logo img {
       width: 444px;
       height: 135px;
       object-fit: contain;
-    }
-    .company-info {
-      font-size: 8pt;
-      line-height: 1.4;
-      margin-bottom: 20px;
-    }
-    h2 {
-      text-align: center;
-      font-size: 11pt;
-      margin: 15px 0 5px;
-    }
-    .sub-header {
-      text-align: center;
-      font-size: 9pt;
-      margin-bottom: 10px;
     }
     table {
       width: 100%;
@@ -36,38 +21,31 @@
       font-size: 8pt;
       table-layout: fixed;
     }
-    th {
-      background: #f4f4f4;
-      font-weight: bold;
-    }
     th, td {
       border: 1px solid #ccc;
-      padding: 4px 5px;
+      padding: 5px;
+      text-align: left;
       vertical-align: top;
-      word-break: break-word;
+    }
+    th {
+      background: #eee;
+      font-weight: bold;
     }
     .right {
       text-align: right;
     }
     .section-title {
-      font-size: 9pt;
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 20px;
+      font-size: 9pt;
     }
-    .sum-cell {
-      width: 20%;
+    .bold-note {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 9pt;
     }
     .desc {
       margin-top: 15px;
-      font-size: 8pt;
-      page-break-inside: avoid;
-    }
-    .desc p {
-      margin-bottom: 6px;
-    }
-    .bold-note {
-      margin-top: 8px;
-      font-weight: bold;
       font-size: 8pt;
     }
   </style>
@@ -78,22 +56,12 @@
   <img src="/static/logo.png">
 </div>
 
-<div class="company-info">
-  ТОО «Фактура», БИН 151240007938, место нахождения Казахстан, г. Астана, ул. Амман, 10<br>
-  <strong>Директор по продажам:</strong> Бурьян Катерина<br>
-  <strong>моб.тел:</strong> +7 705 657 67 57<br>
-  <strong>e-mail:</strong> es@faktura.com.kz
-</div>
-
-<p><strong>Наименование строительства и его адрес:</strong> {{ address }}</p>
-<p><strong>Наименование объекта:</strong> {{ object_name }}</p>
-<p>Основание: коммерческое предложение составлено на основании запроса</p>
-
 <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
-<div class="sub-header">
-  Площадь стен для покрытия материалом Armourcoat "{{ material }}": <strong>{{ area }} м²</strong>
-</div>
+<p><strong>Адрес объекта:</strong> {{ address }}</p>
+<p><strong>Наименование объекта:</strong> {{ object_name }}</p>
+<p><strong>Площадь покрытия:</strong> {{ area }} м²</p>
 
+<h3 class="section-title">Основной материал</h3>
 <table>
   <tr>
     <th style="width: 5%;">№</th>
@@ -122,7 +90,8 @@
   </tr>
   {% endif %}
 </table>
-{% if base_qty %}
+
+{% if base_layer %}
 <h3 class="section-title">Базовый слой</h3>
 <table>
   <tr>
@@ -191,21 +160,21 @@
 
 <div class="desc">
   {% if material == "PERLATA" %}
-  <p>«Perlata» — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды, обеспечивающими создание элегантного внешнего вида декоративной отделки.</p>
-  <p>«Perlata» представлена богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
+  <p>«Perlata» — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды.</p>
+  <p>«Perlata» представлена богатой палитрой цветов, подходящей как для современных, так и для классических интерьеров.</p>
   {% elif material == "TACTITE" %}
-  <p>«Tactite» — полупрозрачное декоративное покрытие на водной основе для создания теплого интерьера с эффектом замшевой поверхности.</p>
-  <p>«Tactite» представлен богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>
+  <p>«Tactite» — полупрозрачное декоративное покрытие на водной основе с эффектом замши.</p>
+  <p>Подходит для тёплых интерьеров, представлена широкая цветовая палитра.</p>
   {% elif material == "LimeWash" %}
-  <p>Материал Armourcoat «LIMEWASH» производится с использованием гашеной извести, каолиновой глины, воды, минеральных пигментов и натуральных добавок, что обеспечивает прочное покрытие по сравнению с традиционными составами.</p>
-  <p>Линейка, не содержащая растворителей и ЛОС, основана на 35-летнем опыте Armourcoat и имеет сертификат Indoor Air Comfort Gold.</p>
+  <p>Материал Armourcoat «LIMEWASH» — натуральное известковое покрытие на водной основе с каолином и пигментами.</p>
+  <p>Линейка не содержит ЛОС, имеет сертификат Indoor Air Comfort Gold.</p>
   {% elif material == "ISTRIA" %}
-  <p>Istria P350 — сверхтонкая мраморная штукатурка на основе извести и микронизированного мрамора, устойчивая к механическим повреждениям.</p>
-  <p>Это почти полностью натуральный материал с высокой прочностью из-за качества извести и мрамора.</p>
+  <p>Istria P350 — готовая сверхтонкая мраморная штукатурка из извести и микронизированного мрамора.</p>
+  <p>Практически полностью натуральный материал с высокой прочностью.</p>
   {% endif %}
 
   {% if aquawax_qty %}
-  <p><strong>Armourcoat AQUAWAX</strong> — натуральная восковая пропитка на водной основе с добавками для защиты пористых поверхностей от воды и загрязнений.</p>
+  <p><strong>Armourcoat AQUAWAX</strong> — натуральная восковая пропитка на водной основе с добавками для защиты пористых поверхностей от влаги и загрязнений.</p>
   {% endif %}
 </div>
 
