@@ -13,9 +13,10 @@
       margin-top: 10px;
     }
     input, select {
-      padding: 5px;
+      padding: 6px;
       margin-top: 4px;
       width: 300px;
+      box-sizing: border-box;
     }
     .hidden {
       display: none;
@@ -146,6 +147,7 @@
       const area = parseFloat(areaInput.value) || 0;
       const material = materialSelect.value;
 
+      // base layer
       if (["PERLATA", "TACTITE"].includes(material)) {
         baseLayerGroup.classList.remove("hidden");
         baseLayerSelect.innerHTML = `<option value="">-- Выберите --</option>` +
@@ -178,7 +180,6 @@
         aquawaxCost.value = "";
       }
 
-      // Base layer logic
       updateBaseLayer();
       updateWorkFields();
     }
@@ -212,35 +213,30 @@
         primerCost.value = primerQty * 2500;
       } else {
         workFields.classList.add("hidden");
-        workPrice.value = "";
+        workPrice.value = 7000;
         extraCost.value = "";
         primerCost.value = "";
       }
     }
 
-    // Реакции на изменение суммы и количества вручную
-    function setupLinkedCalc(qtyField, costField, unitPrice) {
+    // Привязка: изменение количества → сумма
+    //           изменение суммы → количество
+    function setupSync(qtyField, costField, fixedPrice) {
       qtyField.addEventListener("input", () => {
         const qty = parseFloat(qtyField.value) || 0;
-        costField.value = Math.round(qty * unitPrice);
+        costField.value = Math.round(qty * fixedPrice);
       });
       costField.addEventListener("input", () => {
         const cost = parseFloat(costField.value) || 0;
-        qtyField.value = Math.ceil(cost / unitPrice);
+        qtyField.value = Math.ceil(cost / fixedPrice);
       });
     }
 
-    setupLinkedCalc(materialQty, materialCost, PRICES.PERLATA); // заменится позже
-    setupLinkedCalc(aquawaxQty, aquawaxCost, PRICES.AQUAWAX);
-    setupLinkedCalc(baseQty, baseCost, 1); // base пересчитывается отдельно
-    setupLinkedCalc(
-      document.createElement("input"), // dummy
-      extraCost, 12000
-    );
-    setupLinkedCalc(
-      document.createElement("input"),
-      primerCost, 2500
-    );
+    setupSync(materialQty, materialCost, PRICES.PERLATA); // заменим позже
+    setupSync(aquawaxQty, aquawaxCost, PRICES.AQUAWAX);
+    setupSync(baseQty, baseCost, 1); // заменяется логикой выше
+    setupSync(document.createElement("input"), extraCost, 12000);
+    setupSync(document.createElement("input"), primerCost, 2500);
 
     areaInput.addEventListener("input", updateFields);
     materialSelect.addEventListener("change", updateFields);
