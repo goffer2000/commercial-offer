@@ -43,18 +43,22 @@ def form():
         total = mat_cost + aquawax_cost
         if base_cost:
             total += base_cost
-material_full_names = {
-    "PERLATA": "PERLATA PLS",
-    "TACTITE": "TACTITE",
-    "LimeWash": "LimeWash",
-    "ISTRIA": "ISTRIA P350"
-}
-material_name = material_full_names.get(material, material)
+
+        # Названия материалов
+        material_full_names = {
+            "PERLATA": "PERLATA PLS",
+            "TACTITE": "TACTITE",
+            "LimeWash": "LimeWash",
+            "ISTRIA": "ISTRIA P350"
+        }
+        material_name = material_full_names.get(material, material)
+
         # Генерация PDF
         html = render_template("offer.html",
                                address=address,
                                object_name=object_name,
                                material=material,
+                               material_name=material_name,
                                mat_qty=mat_qty,
                                mat_cost=mat_cost,
                                mat_price=mat_price,
@@ -67,8 +71,7 @@ material_name = material_full_names.get(material, material)
                                aquawax_cost=aquawax_cost,
                                total=total,
                                date_str=date_str,
-                               area=area,
-                               material_name=material_name)
+                               area=area)
         pdf = HTML(string=html, base_url=request.host_url).write_pdf()
         return send_file(io.BytesIO(pdf), mimetype="application/pdf",
                          download_name="Коммерческое_предложение.pdf")
