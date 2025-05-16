@@ -86,6 +86,22 @@
       </label>
     </div>
 
+    <div class="section">
+      <label><input type="checkbox" name="include_work" id="include_work"> Работы</label>
+    </div>
+
+    <div id="work-section" class="section hidden">
+      <label>Стоимость работ за 1 кв.м.:
+        <input type="number" name="work_price" id="work_price" step="0.01" value="7000.00">
+      </label>
+      <label>Доп. расходные материалы (тг):
+        <input type="number" name="extra_materials" id="extra_materials" step="1">
+      </label>
+      <label>Грунтовка (тг):
+        <input type="number" name="primer" id="primer" step="1">
+      </label>
+    </div>
+
     <button type="submit">Сформировать PDF</button>
   </form>
 
@@ -103,10 +119,17 @@
     const aquaQty = document.getElementById("aquawax_qty");
     const aquaCost = document.getElementById("aquawax_cost");
 
+    const includeWork = document.getElementById("include_work");
+    const workSection = document.getElementById("work-section");
+    const workPrice = document.getElementById("work_price");
+    const extraMaterials = document.getElementById("extra_materials");
+    const primer = document.getElementById("primer");
+
     function updateForm() {
       const material = materialSelect.value;
       const area = parseFloat(areaInput.value || 0);
 
+      // Основной материал
       let qty = 0, cost = 0;
       if (material === "PERLATA") {
         qty = Math.ceil(area / 6);
@@ -135,32 +158,16 @@
 
       materialQty.value = qty;
       materialCost.value = cost;
+
+      if (includeWork.checked) updateWorkFields(area);
     }
 
     function showBase(options) {
       baseSection.classList.remove("hidden");
       baseLayerSelect.innerHTML = "<option value=''>-- Выберите --</option>" +
         options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
-
-      baseLayerSelect.onchange = () => {
-        const base = baseLayerSelect.value;
-        const area = parseFloat(areaInput.value || 0);
-        let qty = 0;
-        let price = 0;
-
-        if (["Dulux Bindo20", "Marshall Export2"].includes(base)) {
-          qty = Math.ceil(area / 7);
-        } else if (["BaseColor Matt", "BaseColor Satine"].includes(base)) {
-          qty = Math.ceil(area / 9);
-        }
-
-        if (base === "BaseColor Matt" || base === "BaseColor Satine") price = 27000;
-        if (base === "Dulux Bindo20") price = 8000;
-        if (base === "Marshall Export2") price = 4000;
-
-        baseQty.value = qty;
-        baseCost.value = qty * price;
-      };
+      baseQty.value = "";
+      baseCost.value = "";
     }
 
     function hideBase() {
@@ -183,6 +190,45 @@
       aquaQty.value = "";
       aquaCost.value = "";
     }
+
+    function updateWorkFields(area) {
+      const extra = Math.ceil(area / 35) * 12000;
+      const grund = (area / 150) * 2500;
+      extraMaterials.value = Math.round(extra);
+      primer.value = Math.round(grund);
+    }
+
+    includeWork.addEventListener("change", () => {
+      if (includeWork.checked) {
+        workSection.classList.remove("hidden");
+        updateWorkFields(parseFloat(areaInput.value || 0));
+      } else {
+        workSection.classList.add("hidden");
+        workPrice.value = "7000.00";
+        extraMaterials.value = "";
+        primer.value = "";
+      }
+    });
+
+    baseLayerSelect.addEventListener("change", () => {
+      const base = baseLayerSelect.value;
+      const area = parseFloat(areaInput.value || 0);
+      let qty = 0;
+      let price = 0;
+
+      if (["Dulux Bindo20", "Marshall Export2"].includes(base)) {
+        qty = Math.ceil(area / 7);
+      } else if (["BaseColor Matt", "BaseColor Satine"].includes(base)) {
+        qty = Math.ceil(area / 9);
+      }
+
+      if (base === "BaseColor Matt" || base === "BaseColor Satine") price = 27000;
+      if (base === "Dulux Bindo20") price = 8000;
+      if (base === "Marshall Export2") price = 4000;
+
+      baseQty.value = qty;
+      baseCost.value = qty * price;
+    });
 
     materialSelect.addEventListener("change", updateForm);
     areaInput.addEventListener("input", updateForm);
