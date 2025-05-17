@@ -91,8 +91,9 @@
 </div>
 
 <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
-<p class="centered">Площадь покрытия: {{ area }} м²</p>
+<p class="centered">Площадь стен для покрытия материалом Armourcoat "{{ material_name }}": {{ area }} м²</p>
 
+<!-- Основной материал -->
 <table>
   <tr>
     <th>№</th>
@@ -122,6 +123,7 @@
   {% endif %}
 </table>
 
+<!-- Базовый слой -->
 {% if base_layer %}
 <table>
   <tr>
@@ -163,6 +165,7 @@
 </table>
 {% endif %}
 
+<!-- Работы -->
 {% if include_work %}
 <table>
   <tr>
@@ -186,8 +189,9 @@
 
 <p class="bold-note">Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.</p>
 
-<p><strong>Итого: {{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</strong></p>
+<p class="bold-note">ИТОГО: {{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</p>
 
+<!-- ОПИСАНИЯ -->
 <div class="desc">
   {% if material == "PERLATA" %}
   <p><strong>Perlata</strong> — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды.</p>
