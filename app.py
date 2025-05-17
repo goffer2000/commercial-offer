@@ -1,207 +1,96 @@
-<!-- offer.html -->
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <style>
-    @font-face {
-      font-family: 'DejaVu Sans';
-      src: url('file:///opt/render/project/src/static/fonts/DejaVuSans.ttf') format('truetype');
-    }
-    body {
-      font-family: 'DejaVu Sans', sans-serif;
-      font-size: 9pt;
-      margin: 0 5px 10px 5px;
-    }
-    .company-info {
-      font-size: 8pt;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .company-logo img {
-      width: 62px;
-      height: auto;
-      margin-top: 0;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 2px;
-      font-size: 8.5pt;
-    }
-    .centered {
-      text-align: center;
-      font-weight: bold;
-      font-size: 8pt;
-      margin-bottom: 4px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 4px;
-      font-size: 8pt;
-      table-layout: fixed;
-      margin-left: 0;
-      margin-right: auto;
-    }
-    th, td {
-      border: 1px solid #aaa;
-      padding: 3px;
-      vertical-align: top;
-      word-break: break-word;
-      font-weight: normal;
-    }
-    th {
-      background: #f0f0f0;
-      font-weight: bold;
-      text-align: left;
-    }
-    .right { text-align: right; }
-    .bold-note {
-      margin-top: 8px;
-      font-weight: bold;
-      font-size: 9pt;
-    }
-    .desc {
-      font-size: 8pt;
-      margin-top: 8px;
-    }
-    h3 {
-      font-size: 7.5pt;
-      margin: 5px 0 2px 0;
-      font-weight: bold;
-    }
-    th:nth-child(1) { width: 5%; }
-    th:nth-child(2) { width: 38%; }
-    th:nth-child(3), th:nth-child(4) { width: 13%; }
-    th:nth-child(5) { width: 15%; }
-    th:nth-child(6) { width: 16%; }
-    .italic-note {
-      font-size: 7.5pt;
-      font-style: italic;
-      margin: 0 0 4px 0;
-    }
-    .spacer {
-      height: 6px;
-    }
-  </style>
-</head>
-<body>
-  <div class="company-info">
-    <div>
-      ТОО «Фактура», БИН 151240007938, место нахождения Казахстан, г. Астана, ул. Амман, 10<br>
-      <strong>Директор по продажам:</strong> Бурьян Катерина<br>
-      <strong>моб.тел:</strong> +7 705 657 67 57<br>
-      <strong>e-mail:</strong> es@faktura.com.kz
-    </div>
-    <div class="company-logo">
-      <img src="file:///opt/render/project/src/static/logo.png" alt="Logo">
-    </div>
-  </div>
+from flask import Flask, render_template, request, send_file
+from weasyprint import HTML
+import io
+import math
+from datetime import date
 
-  <p><strong>Наименование строительства и его адрес:</strong> {{ address }}</p>
-  <p><strong>Наименование объекта:</strong> {{ object_name }}</p>
-  <p>Основание: коммерческое предложение составлено на основании запроса</p>
+app = Flask(__name__)
 
-  <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
-  <p class="centered">Площадь стен для покрытия материалом Armourcoat "{{ material_name }}": {{ area }} м²</p>
+@app.route("/", methods=["GET", "POST"])
+def form():
+    if request.method == "POST":
+        data = request.form
+        address = data.get("address")
+        object_name = data.get("object_name")
+        material = data.get("material")
+        material_name = material if material != "ISTRIA" else "ISTRIA P350"
+        base_layer = data.get("base_layer")
+        area = float(data.get("area", 0))
+        date_str = data.get("date", str(date.today()))
 
-  <table>
-    <tr><th>№</th><th>Описание</th><th>Ед. изм</th><th>Кол-во</th><th>Цена, тг</th><th>Сумма, тг</th></tr>
-    <tr>
-      <td>1</td><td>Материал Armourcoat "{{ material_name }}"</td>
-      <td>{% if material == "ISTRIA" %}кг{% else %}л{% endif %}</td>
-      <td class="right">{{ mat_qty }}</td>
-      <td class="right">{{ '{:,.2f}'.format(mat_price).replace(',', ' ').replace('.', ',') }}</td>
-      <td class="right">{{ '{:,.2f}'.format(mat_cost).replace(',', ' ').replace('.', ',') }}</td>
-    </tr>
-    {% if aquawax_qty %}
-    <tr>
-      <td>2</td><td>Доп. покрытие: Armourcoat AQUAWAX</td><td>л</td>
-      <td class="right">{{ aquawax_qty }}</td>
-      <td class="right">59 000,00</td>
-      <td class="right">{{ '{:,.2f}'.format(aquawax_cost).replace(',', ' ').replace('.', ',') }}</td>
-    </tr>
-    {% endif %}
-    {% if base_layer in ['BaseColor Matt', 'BaseColor Satine'] %}
-    <tr>
-      <td>{% if aquawax_qty %}3{% else %}2{% endif %}</td>
-      <td>Базовый слой: Материал {{ base_layer }}</td>
-      <td>л</td>
-      <td class="right">{{ base_qty }}</td>
-      <td class="right">{{ '{:,.2f}'.format(base_price).replace(',', ' ').replace('.', ',') }}</td>
-      <td class="right">{{ '{:,.2f}'.format(base_cost).replace(',', ' ').replace('.', ',') }}</td>
-    </tr>
-    {% endif %}
-  </table>
+        # Основной материал
+        mat_qty = int(data.get("material_qty", 0))
+        mat_cost = int(data.get("material_cost", 0))
+        mat_price = round(mat_cost / mat_qty, 2) if mat_qty else 0
 
-  <div class="spacer"></div>
+        # AQUAWAX
+        aquawax_qty = data.get("aquawax_qty")
+        aquawax_cost = data.get("aquawax_cost")
+        if aquawax_qty and aquawax_cost:
+            aquawax_qty = int(aquawax_qty)
+            aquawax_cost = int(aquawax_cost)
+        else:
+            aquawax_qty = aquawax_cost = None
 
-  {% if (base_layer and base_layer not in ['BaseColor Matt', 'BaseColor Satine']) or extra_qty or primer_qty %}
-    {% if include_work %}
-      <h3>Стоимость материалов для создания базового слоя и дополнительных материалов для выполнения работ</h3>
-    {% else %}
-      <h3>Стоимость материалов для создания базового слоя</h3>
-    {% endif %}
-    <p class="italic-note">Дополнительные материалы могут быть предоставлены ТОО "Фактура" или заказчик может приобрести их самостоятельно.</p>
+        # Базовый слой
+        base_qty = data.get("base_qty")
+        base_cost = data.get("base_cost")
+        if base_qty and base_cost and base_layer:
+            base_qty = int(base_qty)
+            base_cost = int(base_cost)
+            if "Dulux" in base_layer or "Marshall" in base_layer:
+                base_price = 8000 if "Dulux" in base_layer else 4000
+            else:
+                base_price = 27000
+        else:
+            base_qty = base_cost = base_price = None
 
-    <table>
-      <tr><th>№</th><th>Описание</th><th>Ед. изм</th><th>Кол-во</th><th>Цена, тг</th><th>Сумма, тг</th></tr>
-      {% if base_layer and base_layer not in ['BaseColor Matt', 'BaseColor Satine'] %}
-      <tr>
-        <td>1</td>
-        <td>Базовый слой: Материал {{ base_layer }}</td>
-        <td>л</td>
-        <td class="right">{{ base_qty }}</td>
-        <td class="right">{{ '{:,.2f}'.format(base_price).replace(',', ' ').replace('.', ',') }}</td>
-        <td class="right">{{ '{:,.2f}'.format(base_cost).replace(',', ' ').replace('.', ',') }}</td>
-      </tr>
-      {% endif %}
-      {% if extra_qty %}
-      <tr>
-        <td>2</td><td>Дополнительные расходные материалы</td><td>компл</td>
-        <td class="right">{{ extra_qty }}</td>
-        <td class="right">12 000,00</td>
-        <td class="right">{{ '{:,.2f}'.format(extra_cost).replace(',', ' ').replace('.', ',') }}</td>
-      </tr>
-      {% endif %}
-      {% if primer_qty %}
-      <tr>
-        <td>3</td><td>Грунтовка</td><td>л</td>
-        <td class="right">{{ primer_qty }}</td>
-        <td class="right">2 500,00</td>
-        <td class="right">{{ '{:,.2f}'.format(primer_cost).replace(',', ' ').replace('.', ',') }}</td>
-      </tr>
-      {% endif %}
-    </table>
-  {% endif %}
+        # Доп. материалы
+        extra_cost = data.get("extra_cost")
+        extra_qty = math.ceil(float(extra_cost) / 12000) if extra_cost else None
+        extra_cost = int(extra_cost) if extra_cost else None
 
-  {% if include_work %}
-  <h3>Стоимость работ по нанесению декоративного покрытия Armourcoat</h3>
-  <table>
-    <tr><th>№</th><th>Описание</th><th>Ед. изм</th><th>Кол-во</th><th>Цена, тг</th><th>Сумма, тг</th></tr>
-    <tr>
-      <td>1</td>
-      <td>Работы по нанесению декоративного покрытия ARMOURCOAT</td>
-      <td>кв.м.</td>
-      <td class="right">{{ area }}</td>
-      <td class="right">{{ '{:,.2f}'.format(work_price).replace(',', ' ').replace('.', ',') }}</td>
-      <td class="right">{{ '{:,.2f}'.format(work_sum).replace(',', ' ').replace('.', ',') }}</td>
-    </tr>
-  </table>
-  {% endif %}
+        # Грунтовка
+        primer_cost = data.get("primer_cost")
+        primer_qty = math.ceil(float(primer_cost) / 2500) if primer_cost else None
+        primer_cost = int(primer_cost) if primer_cost else None
 
-  <p class="bold-note">ИТОГО: {{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</p>
-  <p class="bold-note">Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.</p>
+        # Работы
+        include_work = data.get("include_work") == "on"
+        work_price = float(data.get("work_price", 7000))
+        work_sum = round(area * work_price, 2) if include_work else 0
 
-  <div class="desc">
-    {% if material == "PERLATA" %}<p><strong>Perlata</strong> — износостойкое декоративное покрытие с изысканным мерцанием на водной основе с содержанием мраморной крошки и слюды, обеспечивающими создание элегантного внешнего вида декоративной отделки. «Perlata» представлена богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>{% endif %}
-    {% if material == "TACTITE" %}<p><strong>Tactite</strong> — полупрозрачное декоративное покрытие на водной основе для создания теплого гостеприимного интерьера с эффектом «замшевой поверхности».«Tactite» представлен богатой палитрой цветов, которые подходят как для современных, так и для классических интерьеров.</p>{% endif %}
-    {% if material == "LimeWash" %}<p><strong>LIMEWASH</strong> — производится с использованием гашеной извести, каолиновой глины, воды, минеральных пигментов и натуральных растительных добавок, что обеспечивает более прочное и менее меловое покрытие поверхности по сравнению с традиционными составами известкового раствора. Новая линейка, не содержащая растворителей и летучих органических соединений, основана на более чем 35-летнем опыте компании Armourcoat в разработке роскошных устойчивых отделок, получившем золотой сертификат Indoor Air Comfort.</p>{% endif %}
-    {% if material == "ISTRIA" %}<p><strong>Istria P350</strong> – это готовая к употреблению сверхтонкая мраморная штукатурная паста для создания матового покрытия устойчивого к механическим повреждениям. Istria P350 изготовлена ​​из комбинации гашеной извести, микронизированного мраморного порошка и специальных добавок. Istria P350 представляет собой почти полностью натуральный минеральный материал, достаточно твердый из-за качества и уникального "помола" извести и мрамора, используемых при его производстве.</p>{% endif %}
-    {% if aquawax_qty %}<p><strong>Armourcoat AQUAWAX</strong> — это натуральная восковая пропитка на водной основе, включающая дополнительные добавки для лучшей защиты поверхностей, на которые она наносится. Подходит для покрытия пористых поверхностей, придавая им водонепроницаемые и грязеотталкивающие свойства.</p>{% endif %}
-    {% if base_layer in ['BaseColor Matt', 'BaseColor Satine'] %}<p><strong>BaseColor</strong> – слой основания на основе воды с превосходной адгезией и матовостью, которая представляет собой неотъемлемую часть систем декоративного покрытия «Perlata» и «Tactite».</p>{% endif %}
-  </div>
-</body>
-</html>
+        # Общая сумма
+        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) + \
+                (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
+
+        html = render_template("offer.html",
+            address=address,
+            object_name=object_name,
+            material=material,
+            material_name=material_name,
+            mat_qty=mat_qty,
+            mat_cost=mat_cost,
+            mat_price=mat_price,
+            aquawax_qty=aquawax_qty,
+            aquawax_cost=aquawax_cost,
+            base_layer=base_layer,
+            base_qty=base_qty,
+            base_cost=base_cost,
+            base_price=base_price,
+            extra_qty=extra_qty,
+            extra_cost=extra_cost,
+            primer_qty=primer_qty,
+            primer_cost=primer_cost,
+            include_work=include_work,
+            work_price=work_price,
+            work_sum=work_sum,
+            total=total,
+            date_str=date_str,
+            area=area
+        )
+
+        pdf = HTML(string=html).write_pdf()
+        return send_file(io.BytesIO(pdf), mimetype="application/pdf", download_name="Коммерческое_предложение.pdf")
+
+    return render_template("form.html", current_date=date.today())
