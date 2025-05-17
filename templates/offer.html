@@ -103,7 +103,9 @@
   <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
   <p class="centered">Площадь стен для покрытия материалом Armourcoat "{{ material_name }}": {{ area }} м²</p>
 
-  {% if base_layer or work_checked %}
+  <!-- Динамический заголовок для таблиц базового слоя -->
+  {% set has_main_base_layer = base_layer in ["BaseColor Matt", "BaseColor Satine"] %}
+  {% if work_checked or (base_layer and not has_main_base_layer) %}
     {% if work_checked %}
       <h3>Стоимость материалов для создания базового слоя и дополнительных материалов для выполнения работ</h3>
     {% else %}
