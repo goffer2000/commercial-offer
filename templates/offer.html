@@ -4,24 +4,34 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: DejaVu Sans, sans-serif; font-size: 10pt; margin: 30px; }
-    .company-info { font-size: 9pt; margin-bottom: 20px; }
-    h2 { text-align: center; margin-bottom: 5px; font-size: 13pt; }
-    .centered { text-align: center; font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 9pt; table-layout: fixed; }
+    body { font-family: DejaVu Sans, sans-serif; font-size: 9pt; margin: 20px 20px 20px 30px; }
+    .company-info { font-size: 8pt; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .company-logo img { width: 100px; height: auto; }
+    h2 { text-align: center; margin-bottom: 2px; font-size: 11pt; }
+    .centered { text-align: center; font-weight: bold; font-size: 10pt; margin-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 8pt; table-layout: fixed; }
     th, td { border: 1px solid #aaa; padding: 4px; vertical-align: top; word-wrap: break-word; }
     th { background: #f0f0f0; font-weight: bold; text-align: left; }
     .right { text-align: right; }
-    .bold-note { margin-top: 15px; font-weight: bold; font-size: 10pt; }
-    .desc { font-size: 9pt; margin-top: 15px; }
+    .bold-note { margin-top: 10px; font-weight: bold; font-size: 9pt; }
+    .desc { font-size: 8pt; margin-top: 10px; }
+    h3 { font-size: 9pt; margin: 10px 0 3px 0; }
+    th:nth-child(2) { width: 42%; }
+    th:nth-child(3), th:nth-child(4) { width: 10%; }
+    th:nth-child(5), th:nth-child(6) { width: 18%; }
   </style>
 </head>
 <body>
   <div class="company-info">
-    ТОО «Фактура», БИН 151240007938, место нахождения Казахстан, г. Астана, ул. Амман, 10<br>
-    <strong>Директор по продажам:</strong> Бурьян Катерина<br>
-    <strong>моб.тел:</strong> +7 705 657 67 57<br>
-    <strong>e-mail:</strong> es@faktura.com.kz
+    <div>
+      ТОО «Фактура», БИН 151240007938, место нахождения Казахстан, г. Астана, ул. Амман, 10<br>
+      <strong>Директор по продажам:</strong> Бурьян Катерина<br>
+      <strong>моб.тел:</strong> +7 705 657 67 57<br>
+      <strong>e-mail:</strong> es@faktura.com.kz
+    </div>
+    <div class="company-logo">
+      <img src="/static/logo.png" alt="Logo">
+    </div>
   </div>
 
   <p><strong>Наименование строительства и его адрес:</strong> {{ address }}</p>
