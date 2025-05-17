@@ -76,6 +76,11 @@
     th:nth-child(3), th:nth-child(4) { width: 12%; }
     th:nth-child(5) { width: 13%; }
     th:nth-child(6) { width: 15%; }
+    .italic-note {
+      font-size: 7.5pt;
+      font-style: italic;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -97,6 +102,15 @@
 
   <h2>ARMOURCOAT. Коммерческое предложение от {{ date_str }}</h2>
   <p class="centered">Площадь стен для покрытия материалом Armourcoat "{{ material_name }}": {{ area }} м²</p>
+
+  {% if base_layer or work_checked %}
+    {% if work_checked %}
+      <h3>Стоимость материалов для создания базового слоя и дополнительных материалов для выполнения работ</h3>
+    {% else %}
+      <h3>Стоимость материалов для создания базового слоя</h3>
+    {% endif %}
+    <p class="italic-note">Дополнительные материалы могут быть предоставлены ТОО "Фактура" или заказчик может приобрести их самостоятельно.</p>
+  {% endif %}
 
   <table>
     <tr><th>№</th><th>Описание</th><th>Ед. изм</th><th>Кол-во</th><th>Цена, тг</th><th>Сумма, тг</th></tr>
