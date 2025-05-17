@@ -21,7 +21,7 @@
       align-items: flex-start;
     }
     .company-logo img {
-      width: 32px;
+      width: 62px;
       height: auto;
       margin-top: 0;
     }
@@ -82,6 +82,9 @@
       font-style: italic;
       margin: 0 0 4px 0;
     }
+    .spacer {
+      height: 6px;
+    }
   </style>
 </head>
 <body>
@@ -132,6 +135,8 @@
     </tr>
     {% endif %}
   </table>
+
+  <div class="spacer"></div>
 
   {% if (base_layer and base_layer not in ['BaseColor Matt', 'BaseColor Satine']) or extra_qty or primer_qty %}
     {% if include_work %}
