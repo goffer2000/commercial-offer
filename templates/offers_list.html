@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Список предложений</title>
+  <title>Список коммерческих предложений</title>
 </head>
 <body>
   <h2>Найти предложения</h2>
@@ -12,7 +12,14 @@
   </form>
   <hr>
   <table border="1" cellpadding="4">
-    <tr><th>Дата</th><th>Объект</th><th>Адрес</th><th>Сумма</th><th>PDF</th></tr>
+    <tr>
+      <th>Дата</th>
+      <th>Объект</th>
+      <th>Адрес</th>
+      <th>Сумма</th>
+      <th>PDF</th>
+      <th>Удалить</th>
+    </tr>
     {% for o in offers %}
     <tr>
       <td>{{ o.date }}</td>
@@ -20,6 +27,11 @@
       <td>{{ o.address }}</td>
       <td>{{ "{:,.2f}".format(o.total).replace(",", " ").replace(".", ",") }} тг</td>
       <td><a href="/static/generated/{{ o.pdf_filename }}" target="_blank">Открыть</a></td>
+      <td>
+        <form method="post" action="/delete/{{ o.id }}" onsubmit="return confirm('Удалить это предложение?')">
+          <button type="submit">✖</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
   </table>
