@@ -1,15 +1,14 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request
 from weasyprint import HTML
 import io
 import math
 import os
 import sqlite3
 from datetime import date
-from db import init_db
 from werkzeug.utils import secure_filename
+from dropbox_upload import upload_to_dropbox
 
 app = Flask(__name__)
-init_db()
 
 @app.route("/", methods=["GET", "POST"])
 def form():
@@ -40,10 +39,7 @@ def form():
         if base_qty and base_cost and base_layer:
             base_qty = int(base_qty)
             base_cost = int(base_cost)
-            if "Dulux" in base_layer or "Marshall" in base_layer:
-                base_price = 8000 if "Dulux" in base_layer else 4000
-            else:
-                base_price = 27000
+            base_price = 27000
         else:
             base_qty = base_cost = base_price = None
 
@@ -59,14 +55,12 @@ def form():
         work_price = float(data.get("work_price", 7000))
         work_sum = round(area * work_price, 2) if include_work else 0
 
-        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) + \
-                (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
+        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) +                 (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
 
         clean_material = secure_filename(f"{material_name}_{base_layer or ''}".replace(" ", "_"))
         date_code = date_str.replace("-", "")
         filename = f"{date_code}_{int(total)}_{clean_material}.pdf"
-        pdf_path = f"static/generated/{filename}"
-        os.makedirs("static/generated", exist_ok=True)
+        pdf_path = f"/tmp/{filename}"
 
         html = render_template("offer.html",
             address=address,
@@ -96,16 +90,21 @@ def form():
         HTML(string=html).write_pdf(pdf_path)
 
         try:
-            with sqlite3.connect("offers.db") as conn:
-                conn.execute("""
-                    INSERT INTO offers (date, object_name, address, total, pdf_filename)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (date_str, object_name, address, total, filename))
-            print("✅ Успешно записано в БД")
+            dropbox_url = upload_to_dropbox(pdf_path, filename)
+            print("✅ Загружено в Dropbox:", dropbox_url)
         except Exception as e:
-            print("❌ Ошибка при записи в БД:", e)
+            dropbox_url = "Ошибка загрузки"
+            print("❌ Dropbox ошибка:", e)
 
-        return send_file(pdf_path, as_attachment=False)
+        with sqlite3.connect("offers.db") as conn:
+            conn.execute("CREATE TABLE IF NOT EXISTS offers (date TEXT, object_name TEXT, address TEXT, total REAL, pdf_filename TEXT)")
+            conn.execute("INSERT INTO offers (date, object_name, address, total, pdf_filename) VALUES (?, ?, ?, ?, ?)",
+                         (date_str, object_name, address, total, dropbox_url))
+
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+
+        return f'<p><a href="{dropbox_url}" target="_blank">📄 Открыть PDF</a></p>'
 
     return render_template("form.html", current_date=date.today())
 
@@ -118,19 +117,3 @@ def offers_list():
     if query:
         offers = [o for o in offers if query in o["object_name"].lower() or query in o["address"].lower() or query in o["date"]]
     return render_template("offers_list.html", offers=offers, query=query)
-
-@app.route("/delete/<int:offer_id>", methods=["POST"])
-def delete_offer(offer_id):
-    try:
-        with sqlite3.connect("offers.db") as conn:
-            conn.row_factory = sqlite3.Row
-            offer = conn.execute("SELECT * FROM offers WHERE rowid = ?", (offer_id,)).fetchone()
-            if offer:
-                pdf_path = os.path.join("static/generated", offer["pdf_filename"])
-                if os.path.exists(pdf_path):
-                    os.remove(pdf_path)
-                conn.execute("DELETE FROM offers WHERE rowid = ?", (offer_id,))
-                print(f"🗑 Удалено предложение #{offer_id}")
-    except Exception as e:
-        print("❌ Ошибка при удалении:", e)
-    return "", 204
