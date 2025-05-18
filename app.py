@@ -98,14 +98,14 @@ def form():
         HTML(string=html).write_pdf(pdf_path)
 
         try:
-    with sqlite3.connect("offers.db") as conn:
-        conn.execute("""
-            INSERT INTO offers (date, object_name, address, total, pdf_filename)
-            VALUES (?, ?, ?, ?, ?)
-        """, (date_str, object_name, address, total, filename))
-    print("✅ Успешно записано в БД")
-except Exception as e:
-    print("❌ Ошибка при записи в БД:", e)
+            with sqlite3.connect("offers.db") as conn:
+                conn.execute("""
+                    INSERT INTO offers (date, object_name, address, total, pdf_filename)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (date_str, object_name, address, total, filename))
+            print("✅ Успешно записано в БД")
+       except Exception as e:
+           print("❌ Ошибка при записи в БД:", e)
 
         return send_file(pdf_path, as_attachment=False)
 
