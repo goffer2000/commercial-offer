@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, send_file
 from weasyprint import HTML
 import io
 import math
-from datetime import date
+import os
 import sqlite3
+from datetime import date
 from db import init_db
 
 app = Flask(__name__)
@@ -93,10 +94,13 @@ def form():
             area=area
         )
 
+        # Генерация и сохранение PDF
         filename = f"Коммерческое_предложение_{date_str}_{object_name}.pdf"
         pdf_path = f"static/generated/{filename}"
+        os.makedirs("static/generated", exist_ok=True)
         HTML(string=html).write_pdf(pdf_path)
 
+        # Запись в БД
         try:
             with sqlite3.connect("offers.db") as conn:
                 conn.execute("""
@@ -104,9 +108,10 @@ def form():
                     VALUES (?, ?, ?, ?, ?)
                 """, (date_str, object_name, address, total, filename))
             print("✅ Успешно записано в БД")
-       except Exception as e:
-           print("❌ Ошибка при записи в БД:", e)
+        except Exception as e:
+            print("❌ Ошибка при записи в БД:", e)
 
+        # Отдаём PDF — открывается в браузере
         return send_file(pdf_path, as_attachment=False)
 
     return render_template("form.html", current_date=date.today())
@@ -117,11 +122,6 @@ def offers_list():
     with sqlite3.connect("offers.db") as conn:
         conn.row_factory = sqlite3.Row
         offers = conn.execute("SELECT * FROM offers").fetchall()
-
     if query:
         offers = [o for o in offers if query in o["object_name"].lower() or query in o["address"].lower() or query in o["date"]]
-
     return render_template("offers_list.html", offers=offers, query=query)
-
-if __name__ == "__main__":
-    app.run(debug=True)
