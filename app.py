@@ -3,8 +3,11 @@ from weasyprint import HTML
 import io
 import math
 from datetime import date
+import sqlite3
+from db import init_db
 
 app = Flask(__name__)
+init_db()
 
 @app.route("/", methods=["GET", "POST"])
 def form():
@@ -90,7 +93,31 @@ def form():
             area=area
         )
 
-        pdf = HTML(string=html).write_pdf()
-        return send_file(io.BytesIO(pdf), mimetype="application/pdf", download_name="Коммерческое_предложение.pdf")
+        filename = f"Коммерческое_предложение_{date_str}_{object_name}.pdf"
+        pdf_path = f"static/generated/{filename}"
+        HTML(string=html).write_pdf(pdf_path)
+
+        with sqlite3.connect("offers.db") as conn:
+            conn.execute("""
+                INSERT INTO offers (date, object_name, address, total, pdf_filename)
+                VALUES (?, ?, ?, ?, ?)
+            """, (date_str, object_name, address, total, filename))
+
+        return send_file(pdf_path, as_attachment=True)
 
     return render_template("form.html", current_date=date.today())
+
+@app.route("/offers")
+def offers_list():
+    query = request.args.get("q", "").lower()
+    with sqlite3.connect("offers.db") as conn:
+        conn.row_factory = sqlite3.Row
+        offers = conn.execute("SELECT * FROM offers").fetchall()
+
+    if query:
+        offers = [o for o in offers if query in o["object_name"].lower() or query in o["address"].lower() or query in o["date"]]
+
+    return render_template("offers_list.html", offers=offers, query=query)
+
+if __name__ == "__main__":
+    app.run(debug=True)
