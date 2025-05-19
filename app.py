@@ -6,7 +6,7 @@ import os
 import sqlite3
 from datetime import date
 from werkzeug.utils import secure_filename
-from dropbox_upload import upload_to_dropbox
+from dropbox_upload import upload_to_dropbox, delete_from_dropbox
 
 app = Flask(__name__)
 
@@ -96,11 +96,9 @@ def form():
         HTML(string=html).write_pdf(pdf_path)
 
         try:
-            dropbox_path = upload_to_dropbox(pdf_path, filename)
-            print("✅ Загружено в Dropbox:", dropbox_path)
+            dropbox_filename = upload_to_dropbox(pdf_path, filename)
         except Exception as e:
-            dropbox_path = "Ошибка загрузки"
-            print("❌ Dropbox ошибка:", e)
+            dropbox_filename = f"Ошибка загрузки: {e}"
 
         with sqlite3.connect("offers.db") as conn:
             conn.execute("""
@@ -115,15 +113,14 @@ def form():
             conn.execute("""
                 INSERT INTO offers (date, object_name, address, total, pdf_filename)
                 VALUES (?, ?, ?, ?, ?)
-            """, (date_str, object_name, address, total, dropbox_path))
+            """, (date_str, object_name, address, total, dropbox_filename))
 
         if os.path.exists(pdf_path):
             os.remove(pdf_path)
 
-        return f'<p><a href="{dropbox_path}" target="_blank">📄 Открыть загруженный PDF</a></p>'
+        return f'<p><a href="https://www.dropbox.com/home/CommercialOffers/{dropbox_filename}" target="_blank">📄 Открыть загруженный PDF</a></p>'
 
     return render_template("form.html", current_date=date.today())
-
 
 @app.route("/offers")
 def offers_list():
@@ -136,9 +133,17 @@ def offers_list():
                   or query in o["address"].lower() or query in o["date"]]
     return render_template("offers_list.html", offers=offers, query=query)
 
-
 @app.route("/delete/<int:id>", methods=["POST"])
 def delete_offer(id):
     with sqlite3.connect("offers.db") as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT pdf_filename FROM offers WHERE rowid = ?", (id,))
+        row = cur.fetchone()
+        if row:
+            filename = row[0]
+            try:
+                delete_from_dropbox(filename)
+            except Exception as e:
+                print("⚠ Не удалось удалить из Dropbox:", e)
         conn.execute("DELETE FROM offers WHERE rowid = ?", (id,))
     return redirect(url_for("offers_list"))
