@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file, redirect, url_for
 from weasyprint import HTML
 import io
 import math
@@ -39,7 +39,12 @@ def form():
         if base_qty and base_cost and base_layer:
             base_qty = int(base_qty)
             base_cost = int(base_cost)
-            base_price = 27000
+            if "Dulux" in base_layer:
+                base_price = 8000
+            elif "Marshall" in base_layer:
+                base_price = 4000
+            else:
+                base_price = 27000
         else:
             base_qty = base_cost = base_price = None
 
@@ -55,7 +60,8 @@ def form():
         work_price = float(data.get("work_price", 7000))
         work_sum = round(area * work_price, 2) if include_work else 0
 
-        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) +                 (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
+        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) + \
+                (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
 
         clean_material = secure_filename(f"{material_name}_{base_layer or ''}".replace(" ", "_"))
         date_code = date_str.replace("-", "")
@@ -90,23 +96,34 @@ def form():
         HTML(string=html).write_pdf(pdf_path)
 
         try:
-            dropbox_url = upload_to_dropbox(pdf_path, filename)
-            print("✅ Загружено в Dropbox:", dropbox_url)
+            dropbox_path = upload_to_dropbox(pdf_path, filename)
+            print("✅ Загружено в Dropbox:", dropbox_path)
         except Exception as e:
-            dropbox_url = "Ошибка загрузки"
+            dropbox_path = "Ошибка загрузки"
             print("❌ Dropbox ошибка:", e)
 
         with sqlite3.connect("offers.db") as conn:
-            conn.execute("CREATE TABLE IF NOT EXISTS offers (date TEXT, object_name TEXT, address TEXT, total REAL, pdf_filename TEXT)")
-            conn.execute("INSERT INTO offers (date, object_name, address, total, pdf_filename) VALUES (?, ?, ?, ?, ?)",
-                         (date_str, object_name, address, total, dropbox_url))
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS offers (
+                    date TEXT,
+                    object_name TEXT,
+                    address TEXT,
+                    total REAL,
+                    pdf_filename TEXT
+                )
+            """)
+            conn.execute("""
+                INSERT INTO offers (date, object_name, address, total, pdf_filename)
+                VALUES (?, ?, ?, ?, ?)
+            """, (date_str, object_name, address, total, dropbox_path))
 
         if os.path.exists(pdf_path):
             os.remove(pdf_path)
 
-        return f'<p><a href="{dropbox_url}" target="_blank">📄 Открыть PDF</a></p>'
+        return f'<p><a href="{dropbox_path}" target="_blank">📄 Открыть загруженный PDF</a></p>'
 
     return render_template("form.html", current_date=date.today())
+
 
 @app.route("/offers")
 def offers_list():
@@ -115,5 +132,13 @@ def offers_list():
         conn.row_factory = sqlite3.Row
         offers = conn.execute("SELECT rowid AS id, * FROM offers").fetchall()
     if query:
-        offers = [o for o in offers if query in o["object_name"].lower() or query in o["address"].lower() or query in o["date"]]
+        offers = [o for o in offers if query in o["object_name"].lower()
+                  or query in o["address"].lower() or query in o["date"]]
     return render_template("offers_list.html", offers=offers, query=query)
+
+
+@app.route("/delete/<int:id>", methods=["POST"])
+def delete_offer(id):
+    with sqlite3.connect("offers.db") as conn:
+        conn.execute("DELETE FROM offers WHERE rowid = ?", (id,))
+    return redirect(url_for("offers_list"))
