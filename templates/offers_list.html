@@ -17,7 +17,8 @@
       <th>Объект</th>
       <th>Адрес</th>
       <th>Сумма</th>
-      <th>PDF</th>
+      <th>Файл</th>
+      <th>Удалить</th>
     </tr>
     {% for o in offers %}
     <tr>
@@ -25,7 +26,12 @@
       <td>{{ o.object_name }}</td>
       <td>{{ o.address }}</td>
       <td>{{ "{:,.2f}".format(o.total).replace(",", " ").replace(".", ",") }} тг</td>
-      <td><a href="{{ o.pdf_filename }}" target="_blank">📄 Открыть</a></td>
+      <td>{{ o.pdf_filename }}</td>
+      <td>
+        <form method="post" action="/delete/{{ o.id }}" onsubmit="return confirm('Удалить это предложение?')">
+          <button type="submit">✖</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
   </table>
