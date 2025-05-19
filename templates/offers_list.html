@@ -26,7 +26,7 @@
       <td>{{ o.object_name }}</td>
       <td>{{ o.address }}</td>
       <td>{{ "{:,.2f}".format(o.total).replace(",", " ").replace(".", ",") }} тг</td>
-      <td>{{ o.pdf_filename }}</td>
+      <td><a href="{{ o.pdf_filename }}" target="_blank">Открыть</a></td>
       <td>
         <form method="post" action="/delete/{{ o.id }}" onsubmit="return confirm('Удалить это предложение?')">
           <button type="submit">✖</button>
