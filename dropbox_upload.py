@@ -12,5 +12,4 @@ def upload_to_dropbox(local_path, dropbox_filename):
     with open(local_path, "rb") as f:
         dbx.files_upload(f.read(), f"/CommercialOffers/{dropbox_filename}", mode=dropbox.files.WriteMode.overwrite)
 
-    shared_link = dbx.sharing_create_shared_link_with_settings(f"/CommercialOffers/{dropbox_filename}")
-    return shared_link.url.replace("?dl=0", "?raw=1")
+    return f"dropbox:/CommercialOffers/{dropbox_filename}"
