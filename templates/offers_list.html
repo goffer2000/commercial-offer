@@ -26,7 +26,13 @@
       <td>{{ o.object_name }}</td>
       <td>{{ o.address }}</td>
       <td>{{ "{:,.2f}".format(o.total).replace(",", " ").replace(".", ",") }} тг</td>
-      <td><a href="https://www.dropbox.com/home/CommercialOffers/{{ o.pdf_filename }}" target="_blank">📄 Открыть</a></td>
+      <td>
+        {% if o.dropbox_url %}
+          <a href="{{ o.dropbox_url }}" target="_blank">📄 Dropbox</a>
+        {% else %}
+          <a href="/static/generated/{{ o.pdf_filename }}" target="_blank">📄 Локально</a>
+        {% endif %}
+      </td>
       <td>
         <form method="post" action="/delete/{{ o.id }}" onsubmit="return confirm('Удалить это предложение?')">
           <button type="submit">✖</button>
