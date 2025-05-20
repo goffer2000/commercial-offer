@@ -1,14 +1,14 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, render_template, request, send_file, redirect
 from weasyprint import HTML
+from datetime import date
+import os
 import io
 import math
-import os
 import sqlite3
-from datetime import date
-from werkzeug.utils import secure_filename
-from dropbox_upload import upload_to_dropbox_and_get_shared_link, delete_from_dropbox
+from dropbox_upload import upload_to_dropbox
 
 app = Flask(__name__)
+os.makedirs("static/generated", exist_ok=True)
 
 @app.route("/", methods=["GET", "POST"])
 def form():
@@ -39,10 +39,8 @@ def form():
         if base_qty and base_cost and base_layer:
             base_qty = int(base_qty)
             base_cost = int(base_cost)
-            if "Dulux" in base_layer:
-                base_price = 8000
-            elif "Marshall" in base_layer:
-                base_price = 4000
+            if "Dulux" in base_layer or "Marshall" in base_layer:
+                base_price = 8000 if "Dulux" in base_layer else 4000
             else:
                 base_price = 27000
         else:
@@ -60,12 +58,7 @@ def form():
         work_price = float(data.get("work_price", 7000))
         work_sum = round(area * work_price, 2) if include_work else 0
 
-        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) +                 (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
-
-        clean_material = secure_filename(f"{material_name}_{base_layer or ''}".replace(" ", "_"))
-        date_code = date_str.replace("-", "")
-        filename = f"{date_code}_{int(total)}_{clean_material}.pdf"
-        pdf_path = f"static/generated/{filename}"
+        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) + (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
 
         html = render_template("offer.html",
             address=address,
@@ -93,31 +86,31 @@ def form():
             area=area
         )
 
-        HTML(string=html).write_pdf(pdf_path)
+        filename = f"{date_str.replace('-', '')}_{int(total)}_{material}_{base_layer or ''}.pdf".replace(' ', '_')
+        file_path = f"static/generated/{filename}"
+        HTML(string=html).write_pdf(file_path)
 
-        dropbox_url = None
+        dropbox_path = f"/CommercialOffers/{filename}"
+        dropbox_status = False
         try:
-            dropbox_url = upload_to_dropbox_and_get_shared_link(pdf_path, filename)
+            dropbox_status = upload_to_dropbox(file_path, dropbox_path)
         except Exception as e:
             print("Dropbox upload failed:", e)
 
         with sqlite3.connect("offers.db") as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS offers (
-                    date TEXT,
-                    object_name TEXT,
-                    address TEXT,
-                    total REAL,
-                    pdf_filename TEXT,
-                    dropbox_url TEXT
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    date TEXT, object_name TEXT, address TEXT,
+                    total REAL, pdf_filename TEXT, dropbox_uploaded INTEGER
                 )
             """)
             conn.execute("""
-                INSERT INTO offers (date, object_name, address, total, pdf_filename, dropbox_url)
+                INSERT INTO offers (date, object_name, address, total, pdf_filename, dropbox_uploaded)
                 VALUES (?, ?, ?, ?, ?, ?)
-            """, (date_str, object_name, address, total, filename, dropbox_url))
+            """, (date_str, object_name, address, total, filename, int(dropbox_status)))
 
-        return send_file(pdf_path, as_attachment=False)
+        return send_file(file_path, as_attachment=False)
 
     return render_template("form.html", current_date=date.today())
 
@@ -126,26 +119,20 @@ def offers_list():
     query = request.args.get("q", "").lower()
     with sqlite3.connect("offers.db") as conn:
         conn.row_factory = sqlite3.Row
-        offers = conn.execute("SELECT rowid AS id, * FROM offers").fetchall()
+        offers = conn.execute("SELECT * FROM offers").fetchall()
+
     if query:
-        offers = [o for o in offers if query in o["object_name"].lower()
-                  or query in o["address"].lower() or query in o["date"]]
+        offers = [o for o in offers if query in o["object_name"].lower() or query in o["address"].lower() or query in o["date"]]
+
     return render_template("offers_list.html", offers=offers, query=query)
 
-@app.route("/delete/<int:id>", methods=["POST"])
-def delete_offer(id):
+@app.route("/delete/<int:offer_id>")
+def delete_offer(offer_id):
     with sqlite3.connect("offers.db") as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT pdf_filename FROM offers WHERE rowid = ?", (id,))
-        row = cur.fetchone()
+        row = conn.execute("SELECT pdf_filename FROM offers WHERE id = ?", (offer_id,)).fetchone()
         if row:
-            filename = row[0]
-            try:
-                delete_from_dropbox(filename)
-            except Exception as e:
-                print("⚠ Не удалось удалить из Dropbox:", e)
-            local_path = f"static/generated/{filename}"
-            if os.path.exists(local_path):
-                os.remove(local_path)
-        conn.execute("DELETE FROM offers WHERE rowid = ?", (id,))
-    return redirect(url_for("offers_list"))
+            pdf_path = f"static/generated/{row['pdf_filename']}"
+            if os.path.exists(pdf_path):
+                os.remove(pdf_path)
+        conn.execute("DELETE FROM offers WHERE id = ?", (offer_id,))
+    return redirect("/offers")
