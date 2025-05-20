@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Список коммерческих предложений</title>
+  <title>Список предложений</title>
 </head>
 <body>
   <h2>Найти предложения</h2>
@@ -13,12 +13,7 @@
   <hr>
   <table border="1" cellpadding="4">
     <tr>
-      <th>Дата</th>
-      <th>Объект</th>
-      <th>Адрес</th>
-      <th>Сумма</th>
-      <th>Файл</th>
-      <th>Удалить</th>
+      <th>Дата</th><th>Объект</th><th>Адрес</th><th>Сумма</th><th>Файл</th><th>Действия</th>
     </tr>
     {% for o in offers %}
     <tr>
@@ -27,16 +22,15 @@
       <td>{{ o.address }}</td>
       <td>{{ "{:,.2f}".format(o.total).replace(",", " ").replace(".", ",") }} тг</td>
       <td>
-        {% if o.dropbox_url %}
-          <a href="{{ o.dropbox_url }}" target="_blank">📄 Dropbox</a>
+        <a href="/static/generated/{{ o.pdf_filename }}" target="_blank">📄 PDF</a>
+        {% if o.dropbox_uploaded %}
+          <br><span style="color:green">✓ Загружено в Dropbox</span>
         {% else %}
-          <a href="/static/generated/{{ o.pdf_filename }}" target="_blank">📄 Локально</a>
+          <br><span style="color:gray">— Без Dropbox</span>
         {% endif %}
       </td>
       <td>
-        <form method="post" action="/delete/{{ o.id }}" onsubmit="return confirm('Удалить это предложение?')">
-          <button type="submit">✖</button>
-        </form>
+        <a href="/delete/{{ o.id }}" onclick="return confirm('Удалить предложение?')">❌ Удалить</a>
       </td>
     </tr>
     {% endfor %}
