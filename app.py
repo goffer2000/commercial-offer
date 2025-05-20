@@ -58,7 +58,7 @@ def form():
         work_price = float(data.get("work_price", 7000))
         work_sum = round(area * work_price, 2) if include_work else 0
 
-        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) + (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
+        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) +                 (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
 
         html = render_template("offer.html",
             address=address,
@@ -129,6 +129,7 @@ def offers_list():
 @app.route("/delete/<int:offer_id>")
 def delete_offer(offer_id):
     with sqlite3.connect("offers.db") as conn:
+        conn.row_factory = sqlite3.Row  # <-- ВАЖНО!
         row = conn.execute("SELECT pdf_filename FROM offers WHERE id = ?", (offer_id,)).fetchone()
         if row:
             pdf_path = f"static/generated/{row['pdf_filename']}"
