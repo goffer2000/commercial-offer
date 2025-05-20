@@ -1,13 +1,12 @@
 import os
 import requests
+import json
 from datetime import datetime, timedelta
 
-# Конфигурация из переменных среды
 APP_KEY = os.getenv("DROPBOX_APP_KEY")
 APP_SECRET = os.getenv("DROPBOX_APP_SECRET")
 REFRESH_TOKEN = os.getenv("DROPBOX_REFRESH_TOKEN")
 
-# Кэшируем access_token в памяти (для 1 запуска)
 access_token = None
 access_token_expiry = None
 
@@ -39,12 +38,12 @@ def upload_to_dropbox(file_path, dropbox_path):
     url = "https://content.dropboxapi.com/2/files/upload"
     headers = {
         "Authorization": f"Bearer {token}",
-        "Dropbox-API-Arg": str({
+        "Dropbox-API-Arg": json.dumps({
             "path": dropbox_path,
             "mode": "add",
             "autorename": True,
             "mute": False
-        }).replace("'", '"'),
+        }),
         "Content-Type": "application/octet-stream"
     }
 
