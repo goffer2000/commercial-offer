@@ -6,7 +6,7 @@ import os
 import sqlite3
 from datetime import date
 from werkzeug.utils import secure_filename
-from dropbox_upload import upload_to_dropbox, delete_from_dropbox
+from dropbox_upload import upload_to_dropbox_and_get_shared_link, delete_from_dropbox
 
 app = Flask(__name__)
 
@@ -60,13 +60,12 @@ def form():
         work_price = float(data.get("work_price", 7000))
         work_sum = round(area * work_price, 2) if include_work else 0
 
-        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) + \
-                (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
+        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) +                 (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
 
         clean_material = secure_filename(f"{material_name}_{base_layer or ''}".replace(" ", "_"))
         date_code = date_str.replace("-", "")
         filename = f"{date_code}_{int(total)}_{clean_material}.pdf"
-        pdf_path = f"/tmp/{filename}"
+        pdf_path = f"static/generated/{filename}"
 
         html = render_template("offer.html",
             address=address,
@@ -93,12 +92,14 @@ def form():
             date_str=date_str,
             area=area
         )
+
         HTML(string=html).write_pdf(pdf_path)
 
+        dropbox_url = None
         try:
-            dropbox_filename = upload_to_dropbox(pdf_path, filename)
+            dropbox_url = upload_to_dropbox_and_get_shared_link(pdf_path, filename)
         except Exception as e:
-            dropbox_filename = f"Ошибка загрузки: {e}"
+            print("Dropbox upload failed:", e)
 
         with sqlite3.connect("offers.db") as conn:
             conn.execute("""
@@ -107,18 +108,16 @@ def form():
                     object_name TEXT,
                     address TEXT,
                     total REAL,
-                    pdf_filename TEXT
+                    pdf_filename TEXT,
+                    dropbox_url TEXT
                 )
             """)
             conn.execute("""
-                INSERT INTO offers (date, object_name, address, total, pdf_filename)
-                VALUES (?, ?, ?, ?, ?)
-            """, (date_str, object_name, address, total, dropbox_filename))
+                INSERT INTO offers (date, object_name, address, total, pdf_filename, dropbox_url)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (date_str, object_name, address, total, filename, dropbox_url))
 
-        if os.path.exists(pdf_path):
-            os.remove(pdf_path)
-
-        return f'<p><a href="https://www.dropbox.com/home/CommercialOffers/{dropbox_filename}" target="_blank">📄 Открыть загруженный PDF</a></p>'
+        return send_file(pdf_path, as_attachment=False)
 
     return render_template("form.html", current_date=date.today())
 
@@ -145,5 +144,8 @@ def delete_offer(id):
                 delete_from_dropbox(filename)
             except Exception as e:
                 print("⚠ Не удалось удалить из Dropbox:", e)
+            local_path = f"static/generated/{filename}"
+            if os.path.exists(local_path):
+                os.remove(local_path)
         conn.execute("DELETE FROM offers WHERE rowid = ?", (id,))
     return redirect(url_for("offers_list"))
