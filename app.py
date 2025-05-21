@@ -22,14 +22,14 @@ def form():
         area = float(data.get("area", 0))
         date_str = data.get("date", str(date.today()))
 
-        mat_qty = int(data.get("material_qty", 0))
+        mat_qty = float(data.get("material_qty", 0))
         mat_cost = int(data.get("material_cost", 0))
         mat_price = round(mat_cost / mat_qty, 2) if mat_qty else 0
 
         aquawax_qty = data.get("aquawax_qty")
         aquawax_cost = data.get("aquawax_cost")
         if aquawax_qty and aquawax_cost:
-            aquawax_qty = int(aquawax_qty)
+            aquawax_qty = float(aquawax_qty)
             aquawax_cost = int(aquawax_cost)
         else:
             aquawax_qty = aquawax_cost = None
@@ -37,7 +37,7 @@ def form():
         base_qty = data.get("base_qty")
         base_cost = data.get("base_cost")
         if base_qty and base_cost and base_layer:
-            base_qty = int(base_qty)
+            base_qty = float(base_qty)
             base_cost = int(base_cost)
             if "Dulux" in base_layer or "Marshall" in base_layer:
                 base_price = 8000 if "Dulux" in base_layer else 4000
@@ -47,18 +47,27 @@ def form():
             base_qty = base_cost = base_price = None
 
         extra_cost = data.get("extra_cost")
-        extra_qty = math.ceil(float(extra_cost) / 12000) if extra_cost else None
+        extra_qty = round(float(extra_cost) / 12000, 1) if extra_cost else None
         extra_cost = int(extra_cost) if extra_cost else None
 
         primer_cost = data.get("primer_cost")
-        primer_qty = math.ceil(float(primer_cost) / 2500) if primer_cost else None
+        primer_qty = round(float(primer_cost) / 2500, 1) if primer_cost else None
         primer_cost = int(primer_cost) if primer_cost else None
 
         include_work = data.get("include_work") == "on"
         work_price = float(data.get("work_price", 7000))
         work_sum = round(area * work_price, 2) if include_work else 0
 
-        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) +                 (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
+        special_note = data.get("special_note", "").strip()
+        try:
+            special_cost = float(data.get("special_cost", 0))
+        except (ValueError, TypeError):
+            special_cost = 0.0
+
+        total = mat_cost + (aquawax_cost or 0) + (base_cost or 0) + \
+                (extra_cost or 0) + (primer_cost or 0) + (work_sum or 0)
+
+        total += special_cost
 
         html = render_template("offer.html",
             address=address,
@@ -82,6 +91,8 @@ def form():
             work_price=work_price,
             work_sum=work_sum,
             total=total,
+            special_note=special_note,
+            special_cost=special_cost,
             date_str=date_str,
             area=area
         )
