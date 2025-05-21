@@ -156,7 +156,7 @@
         <td>1</td>
         <td>Базовый слой: Материал {{ base_layer }}</td>
         <td>л</td>
-        <td class="right">{{ '{:.0f}'.format(base_qty) }}</td>
+        <td class="right">{{ '{:.1f}'.format(base_qty) }}</td>
         <td class="right">{{ '{:,.2f}'.format(base_price).replace(',', ' ').replace('.', ',') }}</td>
         <td class="right">{{ '{:,.2f}'.format(base_cost).replace(',', ' ').replace('.', ',') }}</td>
       </tr>
@@ -196,17 +196,16 @@
   {% endif %}
 
   {% if special_note and special_cost %}
-  <table>
-    <tr>
-  <td></td>
-  <td style="font-weight: bold; color: darkred">{{ special_note }}</td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td class="right" style="font-weight: bold; color: darkred">{{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}</td>
-</tr>
-  </table>
-  {% endif %}
+<table style="border-collapse: collapse; margin-top: 4px; font-size: 8pt; table-layout: fixed; width: 100%;">
+  <tr>
+    <td style="border: none; font-weight: bold; color: darkred;" colspan="5">{{ special_note }}</td>
+    <td class="right" style="border: none; font-weight: bold; color: darkred;">
+      {{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}
+    </td>
+  </tr>
+</table>
+{% endif %}
+
 
   <p class="bold-note">ИТОГО: {{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</p>
   <p class="bold-note">Для начала работ по колеровке и поставке необходима 100% предоплата стоимости всех материалов.</p>
