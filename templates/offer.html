@@ -199,14 +199,10 @@
 {% if special_note and special_cost %}
 <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-top: 4px;">
   <tr>
-    <td style="width: 5%; border: none;"></td>
-    <td style="width: 38%; border: none; font-weight: bold; color: darkred; white-space: pre-wrap; word-break: break-word;">
+    <td colspan="5" style="border: none; font-weight: bold; color: darkred; white-space: pre-wrap; word-break: break-word; vertical-align: bottom;">
       {{ special_note }}
     </td>
-    <td style="width: 13%; border: none;"></td>
-    <td style="width: 13%; border: none;"></td>
-    <td style="width: 15%; border: none;"></td>
-    <td style="width: 16%; border: none; text-align: right; font-weight: bold; color: darkred;">
+    <td style="border: none; font-weight: bold; color: darkred; text-align: right; vertical-align: bottom;">
       {{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}
     </td>
   </tr>
