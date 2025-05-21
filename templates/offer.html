@@ -197,14 +197,14 @@
 
   {% if special_note and special_cost %}
   <table>
-    <tr class="invisible-row">
-      <td></td>
-      <td colspan="5" style="font-weight: bold; color: darkred; text-align: right">{{ special_note }}</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="right" style="font-weight: bold; color: darkred">{{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}</td>
-    </tr>
+    <tr>
+  <td></td>
+  <td style="font-weight: bold; color: darkred">{{ special_note }}</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td class="right" style="font-weight: bold; color: darkred">{{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}</td>
+</tr>
   </table>
   {% endif %}
 
