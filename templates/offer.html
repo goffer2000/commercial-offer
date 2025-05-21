@@ -199,14 +199,17 @@
   {% if special_note and special_cost %}
 <table style="border-collapse: collapse; margin-top: 4px; font-size: 8pt; table-layout: fixed; width: 100%;">
   <tr>
-    <td style="border: none; font-weight: bold; color: darkred;" colspan="5">{{ special_note }}</td>
+    <td style="border: none;"></td>
+    <td style="border: none; font-weight: bold; color: darkred;">{{ special_note }}</td>
+    <td style="border: none;"></td>
+    <td style="border: none;"></td>
+    <td style="border: none;"></td>
     <td class="right" style="border: none; font-weight: bold; color: darkred;">
       {{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}
     </td>
   </tr>
 </table>
 {% endif %}
-
 
   <p class="bold-note">ИТОГО: {{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</p>
   {% if include_work %}
