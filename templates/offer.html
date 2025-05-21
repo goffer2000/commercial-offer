@@ -208,12 +208,13 @@
   </colgroup>
   <tr>
     <td colspan="5" style="border: none; font-weight: bold; color: darkred;">{{ special_note }}</td>
-    <td class="right" style="border: none; font-weight: bold; color: darkred;">
+    <td style="border: none; font-weight: bold; color: darkred; text-align: right;">
       {{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}
     </td>
   </tr>
 </table>
 {% endif %}
+
 
   <p class="bold-note">ИТОГО: {{ '{:,.2f}'.format(total).replace(',', ' ').replace('.', ',') }} тг</p>
   {% if include_work %}
