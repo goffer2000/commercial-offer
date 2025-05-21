@@ -196,17 +196,17 @@
   </table>
   {% endif %}
 
-  {% if special_note and special_cost %}
-<table style="width: 100%; border-collapse: collapse; font-size: 8pt; table-layout: fixed; margin-top: 4px;">
-  <colgroup>
-    <col style="width: 84%;">
-    <col style="width: 16%;">
-  </colgroup>
+{% if special_note and special_cost %}
+<table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-top: 4px;">
   <tr>
-    <td style="border: none; font-weight: bold; color: darkred; white-space: pre-wrap; word-break: break-word; vertical-align: top;">
+    <td style="width: 5%; border: none;"></td>
+    <td style="width: 38%; border: none; font-weight: bold; color: darkred; white-space: pre-wrap; word-break: break-word;">
       {{ special_note }}
     </td>
-    <td style="border: none; font-weight: bold; color: darkred; text-align: right; vertical-align: top;">
+    <td style="width: 13%; border: none;"></td>
+    <td style="width: 13%; border: none;"></td>
+    <td style="width: 15%; border: none;"></td>
+    <td style="width: 16%; border: none; text-align: right; font-weight: bold; color: darkred;">
       {{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}
     </td>
   </tr>
