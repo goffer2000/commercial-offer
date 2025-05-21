@@ -129,7 +129,7 @@
       if (material === "LimeWash") ratio = 5;
       if (material === "ISTRIA") ratio = 0.8;
 
-      const qty = Math.round(area / ratio);
+      const qty = Math.round(area / ratio * 10) / 10;
       const price = PRICES[material] || 0;
       matQty.value = qty;
       matCost.value = qty * price;
@@ -137,7 +137,7 @@
 
       if (["LimeWash", "ISTRIA"].includes(material)) {
         aquawaxGroup.classList.remove("hidden");
-        const awQty = Math.round(area / 16);
+        const awQty = Math.round(area / 16 * 10) / 10;
         aquawaxQty.value = awQty;
         aquawaxCost.value = awQty * PRICES.AQUAWAX;
         bindSync(aquawaxQty, aquawaxCost, PRICES.AQUAWAX);
@@ -167,7 +167,7 @@
       if (["Dulux Bindo20", "Marshall Export2"].includes(base)) ratio = 7;
       if (["BaseColor Matt", "BaseColor Satine"].includes(base)) ratio = 9;
 
-      const qty = Math.round(area / ratio);
+      const qty = Math.round(area / ratio * 10) / 10;
       baseQty.value = qty;
 
       let price = 0;
