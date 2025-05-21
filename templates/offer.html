@@ -115,7 +115,7 @@
     <tr>
       <td>1</td><td>Материал Armourcoat "{{ material_name }}"</td>
       <td>{% if material == "ISTRIA" %}кг{% else %}л{% endif %}</td>
-      <td class="right">{{ '{:.0f}'.format(mat_qty) }}</td>
+      <td class="right">{{ '{:.1f}'.format(mat_qty) }}</td>
       <td class="right">{{ '{:,.2f}'.format(mat_price).replace(',', ' ').replace('.', ',') }}</td>
       <td class="right">{{ '{:,.2f}'.format(mat_cost).replace(',', ' ').replace('.', ',') }}</td>
     </tr>
@@ -132,7 +132,7 @@
       <td>{% if aquawax_qty %}3{% else %}2{% endif %}</td>
       <td>Базовый слой: Материал {{ base_layer }}</td>
       <td>л</td>
-      <td class="right">{{ '{:.0f}'.format(base_qty) }}</td>
+      <td class="right">{{ '{:.1f}'.format(base_qty) }}</td>
       <td class="right">{{ '{:,.2f}'.format(base_price).replace(',', ' ').replace('.', ',') }}</td>
       <td class="right">{{ '{:,.2f}'.format(base_cost).replace(',', ' ').replace('.', ',') }}</td>
     </tr>
@@ -199,7 +199,7 @@
   <table>
     <tr class="invisible-row">
       <td></td>
-      <td style="font-weight: bold; color: darkred">{{ special_note }}</td>
+      <td colspan="5" style="font-weight: bold; color: darkred; text-align: right">{{ special_note }}</td>
       <td></td>
       <td></td>
       <td></td>
