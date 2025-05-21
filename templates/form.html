@@ -35,7 +35,7 @@
     </label>
 
     <label>Количество основного материала (л):
-      <input name="material_qty" id="material_qty" type="number" step="1" required>
+      <input name="material_qty" id="material_qty" type="number" step="0.1" required>
     </label>
     <label>Стоимость (тг):
       <input name="material_cost" id="material_cost" type="number" step="1" required>
@@ -43,7 +43,7 @@
 
     <div id="aquawaxGroup" class="section hidden">
       <p><strong>AQUAWAX:</strong></p>
-      <label>Количество (л): <input name="aquawax_qty" id="aquawax_qty" type="number" step="1"></label>
+      <label>Количество (л): <input name="aquawax_qty" id="aquawax_qty" type="number" step="0.1"></label>
       <label>Стоимость (тг): <input name="aquawax_cost" id="aquawax_cost" type="number" step="1"></label>
     </div>
 
@@ -53,7 +53,7 @@
           <option value="">-- Выберите --</option>
         </select>
       </label>
-      <label>Количество (л): <input name="base_qty" id="base_qty" type="number" step="1"></label>
+      <label>Количество (л): <input name="base_qty" id="base_qty" type="number" step="0.1"></label>
       <label>Стоимость (тг): <input name="base_cost" id="base_cost" type="number" step="1"></label>
     </div>
 
@@ -65,6 +65,13 @@
       <label>Стоимость работ за 1 кв.м.: <input name="work_price" id="work_price" type="number" step="1" value="7000"></label>
       <label>Доп. расходные материалы (тг): <input name="extra_cost" id="extra_cost" type="number" step="1"></label>
       <label>Грунтовка (тг): <input name="primer_cost" id="primer_cost" type="number" step="1"></label>
+    </div>
+
+    <label><input type="checkbox" name="include_special" id="include_special"> Особые условия</label>
+
+    <div id="specialFields" class="section hidden">
+      <label>Описание: <input name="special_note" id="special_note" type="text"></label>
+      <label>Сумма (тг): <input name="special_cost" id="special_cost" type="number" step="1"></label>
     </div>
 
     <br><button type="submit">Сформировать PDF</button>
@@ -92,6 +99,9 @@
     const extraCost = document.getElementById("extra_cost");
     const primerCost = document.getElementById("primer_cost");
 
+    const includeSpecial = document.getElementById("include_special");
+    const specialFields = document.getElementById("specialFields");
+
     const PRICES = {
       PERLATA: 54200,
       TACTITE: 72000,
@@ -118,26 +128,23 @@
       if (material === "LimeWash") ratio = 5;
       if (material === "ISTRIA") ratio = 0.8;
 
-      const qty = Math.ceil(area / ratio);
+      const qty = +(area / ratio).toFixed(1);
       const price = PRICES[material] || 0;
       matQty.value = qty;
-      matCost.value = qty * price;
-
+      matCost.value = Math.round(qty * price);
       bindSync(matQty, matCost, price);
 
-      // AQUAWAX
       if (["LimeWash", "ISTRIA"].includes(material)) {
         aquawaxGroup.classList.remove("hidden");
-        const awQty = Math.ceil(area / 16);
+        const awQty = +(area / 16).toFixed(1);
         aquawaxQty.value = awQty;
-        aquawaxCost.value = awQty * PRICES.AQUAWAX;
+        aquawaxCost.value = Math.round(awQty * PRICES.AQUAWAX);
         bindSync(aquawaxQty, aquawaxCost, PRICES.AQUAWAX);
       } else {
         aquawaxGroup.classList.add("hidden");
         aquawaxQty.value = aquawaxCost.value = "";
       }
 
-      // BASE LAYER
       if (BASE_OPTIONS[material]) {
         baseLayerGroup.classList.remove("hidden");
         baseLayerSelect.innerHTML = `<option value="">-- Выберите --</option>` +
@@ -148,7 +155,6 @@
         baseLayerSelect.innerHTML = "";
       }
 
-      // WORKS
       updateWorkFields();
     }
 
@@ -160,7 +166,7 @@
       if (["Dulux Bindo20", "Marshall Export2"].includes(base)) ratio = 7;
       if (["BaseColor Matt", "BaseColor Satine"].includes(base)) ratio = 9;
 
-      const qty = Math.ceil(area / ratio);
+      const qty = +(area / ratio).toFixed(1);
       baseQty.value = qty;
 
       let price = 0;
@@ -168,7 +174,7 @@
       if (PRICES.base_8000.includes(base)) price = 8000;
       if (PRICES.base_4000.includes(base)) price = 4000;
 
-      baseCost.value = qty * price;
+      baseCost.value = Math.round(qty * price);
       bindSync(baseQty, baseCost, price);
     }
 
@@ -178,11 +184,8 @@
         workFields.classList.remove("hidden");
         const extraQty = Math.ceil(area / 35);
         extraCost.value = extraQty * 12000;
-        bindSync(null, extraCost, 12000);
-
-        const primerQty = Math.ceil(area / 16);
-        primerCost.value = primerQty * 2500;
-        bindSync(null, primerCost, 2500);
+        const primerQty = +(area / 16).toFixed(1);
+        primerCost.value = Math.round(primerQty * 2500);
       } else {
         workFields.classList.add("hidden");
         workPrice.value = 7000;
@@ -201,7 +204,7 @@
       if (costField && qtyField) {
         costField.addEventListener("input", () => {
           const cost = parseFloat(costField.value) || 0;
-          qtyField.value = Math.ceil(cost / unitPrice);
+          qtyField.value = +(cost / unitPrice).toFixed(1);
         });
       }
     }
@@ -210,6 +213,9 @@
     areaInput.addEventListener("input", updateFields);
     baseLayerSelect.addEventListener("change", updateBaseLayer);
     includeWork.addEventListener("change", updateWorkFields);
+    includeSpecial.addEventListener("change", () => {
+      specialFields.classList.toggle("hidden", !includeSpecial.checked);
+    });
   </script>
 </body>
 </html>
