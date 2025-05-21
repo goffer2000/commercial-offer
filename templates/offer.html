@@ -199,16 +199,14 @@
 {% if special_note and special_cost %}
 <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-top: 4px;">
   <tr>
-    <td style="width: 5%; border: none; padding: 0;"></td>
-    <td style="width: 38%; border: none; padding: 0; font-weight: bold; color: darkred; white-space: pre-wrap; word-break: break-word; vertical-align: middle;">
-      <span style="display: inline-block; text-indent: 0; margin: 0; padding: 0;">
-        {{ special_note.lstrip() }}
-      </span>
+    <td style="width: 5%; border: none;"></td>
+    <td style="width: 38%; border: none; font-weight: bold; color: darkred; white-space: pre-wrap; word-break: break-word; vertical-align: middle;">
+      {{ special_note }}
     </td>
-    <td style="width: 13%; border: none; padding: 0;"></td>
-    <td style="width: 13%; border: none; padding: 0;"></td>
-    <td style="width: 15%; border: none; padding: 0;"></td>
-    <td style="width: 16%; border: none; padding: 0; font-weight: bold; color: darkred; text-align: right; vertical-align: middle;">
+    <td style="width: 13%; border: none;"></td>
+    <td style="width: 13%; border: none;"></td>
+    <td style="width: 15%; border: none;"></td>
+    <td style="width: 16%; border: none; font-weight: bold; color: darkred; text-align: right; vertical-align: middle;">
       {{ '{:,.2f}'.format(special_cost).replace(',', ' ').replace('.', ',') }}
     </td>
   </tr>
