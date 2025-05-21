@@ -67,11 +67,12 @@
       <label>Грунтовка (тг): <input name="primer_cost" id="primer_cost" type="number" step="1"></label>
     </div>
 
-    <label><input type="checkbox" name="include_special" id="include_special"> Особые условия</label>
-
-    <div id="specialFields" class="section hidden">
-      <label>Описание: <input name="special_note" id="special_note" type="text"></label>
-      <label>Сумма (тг): <input name="special_cost" id="special_cost" type="number" step="1"></label>
+    <label>
+      <input type="checkbox" id="special_toggle"> Особые условия
+    </label>
+    <div id="specialSection" class="section hidden">
+      <label>Описание: <input type="text" name="special_note"></label>
+      <label>Сумма (тг): <input type="number" name="special_cost" step="1"></label>
     </div>
 
     <br><button type="submit">Сформировать PDF</button>
@@ -99,8 +100,8 @@
     const extraCost = document.getElementById("extra_cost");
     const primerCost = document.getElementById("primer_cost");
 
-    const includeSpecial = document.getElementById("include_special");
-    const specialFields = document.getElementById("specialFields");
+    const specialToggle = document.getElementById("special_toggle");
+    const specialSection = document.getElementById("specialSection");
 
     const PRICES = {
       PERLATA: 54200,
@@ -128,17 +129,17 @@
       if (material === "LimeWash") ratio = 5;
       if (material === "ISTRIA") ratio = 0.8;
 
-      const qty = +(area / ratio).toFixed(1);
+      const qty = Math.round(area / ratio);
       const price = PRICES[material] || 0;
       matQty.value = qty;
-      matCost.value = Math.round(qty * price);
+      matCost.value = qty * price;
       bindSync(matQty, matCost, price);
 
       if (["LimeWash", "ISTRIA"].includes(material)) {
         aquawaxGroup.classList.remove("hidden");
-        const awQty = +(area / 16).toFixed(1);
+        const awQty = Math.round(area / 16);
         aquawaxQty.value = awQty;
-        aquawaxCost.value = Math.round(awQty * PRICES.AQUAWAX);
+        aquawaxCost.value = awQty * PRICES.AQUAWAX;
         bindSync(aquawaxQty, aquawaxCost, PRICES.AQUAWAX);
       } else {
         aquawaxGroup.classList.add("hidden");
@@ -166,7 +167,7 @@
       if (["Dulux Bindo20", "Marshall Export2"].includes(base)) ratio = 7;
       if (["BaseColor Matt", "BaseColor Satine"].includes(base)) ratio = 9;
 
-      const qty = +(area / ratio).toFixed(1);
+      const qty = Math.round(area / ratio);
       baseQty.value = qty;
 
       let price = 0;
@@ -174,7 +175,7 @@
       if (PRICES.base_8000.includes(base)) price = 8000;
       if (PRICES.base_4000.includes(base)) price = 4000;
 
-      baseCost.value = Math.round(qty * price);
+      baseCost.value = qty * price;
       bindSync(baseQty, baseCost, price);
     }
 
@@ -184,8 +185,11 @@
         workFields.classList.remove("hidden");
         const extraQty = Math.ceil(area / 35);
         extraCost.value = extraQty * 12000;
-        const primerQty = +(area / 16).toFixed(1);
-        primerCost.value = Math.round(primerQty * 2500);
+        bindSync(null, extraCost, 12000);
+
+        const primerQty = Math.ceil(area / 16);
+        primerCost.value = primerQty * 2500;
+        bindSync(null, primerCost, 2500);
       } else {
         workFields.classList.add("hidden");
         workPrice.value = 7000;
@@ -204,7 +208,7 @@
       if (costField && qtyField) {
         costField.addEventListener("input", () => {
           const cost = parseFloat(costField.value) || 0;
-          qtyField.value = +(cost / unitPrice).toFixed(1);
+          qtyField.value = (cost / unitPrice).toFixed(1);
         });
       }
     }
@@ -213,8 +217,8 @@
     areaInput.addEventListener("input", updateFields);
     baseLayerSelect.addEventListener("change", updateBaseLayer);
     includeWork.addEventListener("change", updateWorkFields);
-    includeSpecial.addEventListener("change", () => {
-      specialFields.classList.toggle("hidden", !includeSpecial.checked);
+    specialToggle.addEventListener("change", () => {
+      specialSection.classList.toggle("hidden", !specialToggle.checked);
     });
   </script>
 </body>
