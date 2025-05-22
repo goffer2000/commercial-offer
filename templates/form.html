@@ -63,8 +63,10 @@
 
     <div id="workFields" class="section hidden">
       <label>Стоимость работ за 1 кв.м.: <input name="work_price" id="work_price" type="number" step="1" value="7000"></label>
-      <label>Доп. расходные материалы (тг): <input name="extra_cost" id="extra_cost" type="number" step="1"></label>
-      <label>Грунтовка (тг): <input name="primer_cost" id="primer_cost" type="number" step="1"></label>
+      <label>Доп. расходные материалы (компл): <input name="extra_qty" id="extra_qty" type="number" step="0.1"></label>
+      <label>Стоимость (тг): <input name="extra_cost" id="extra_cost" type="number" step="1"></label>
+      <label>Грунтовка (л): <input name="primer_qty" id="primer_qty" type="number" step="0.1"></label>
+      <label>Стоимость (тг): <input name="primer_cost" id="primer_cost" type="number" step="1"></label>
     </div>
 
     <label>
@@ -97,7 +99,9 @@
     const includeWork = document.getElementById("include_work");
     const workFields = document.getElementById("workFields");
     const workPrice = document.getElementById("work_price");
+    const extraQty = document.getElementById("extra_qty");
     const extraCost = document.getElementById("extra_cost");
+    const primerQty = document.getElementById("primer_qty");
     const primerCost = document.getElementById("primer_cost");
 
     const specialToggle = document.getElementById("special_toggle");
@@ -183,18 +187,21 @@
       const area = parseFloat(areaInput.value) || 0;
       if (includeWork.checked) {
         workFields.classList.remove("hidden");
-        const extraQty = Math.ceil(area / 35);
-        extraCost.value = extraQty * 12000;
-        bindSync(null, extraCost, 12000);
+        const extraQtyVal = Math.ceil(area / 35);
+        const primerQtyVal = Math.ceil(area / 16);
 
-        const primerQty = Math.ceil(area / 16);
-        primerCost.value = primerQty * 2500;
-        bindSync(null, primerCost, 2500);
+        extraQty.value = extraQtyVal;
+        extraCost.value = extraQtyVal * 12000;
+        primerQty.value = primerQtyVal;
+        primerCost.value = primerQtyVal * 2500;
+
+        bindSync(extraQty, extraCost, 12000);
+        bindSync(primerQty, primerCost, 2500);
       } else {
         workFields.classList.add("hidden");
         workPrice.value = 7000;
-        extraCost.value = "";
-        primerCost.value = "";
+        extraQty.value = extraCost.value = "";
+        primerQty.value = primerCost.value = "";
       }
     }
 
