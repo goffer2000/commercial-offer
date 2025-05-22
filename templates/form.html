@@ -24,22 +24,24 @@
     <label>Дата: <input type="date" name="date" value="{{ current_date }}" required></label>
     <label>Площадь покрытия (м²): <input name="area" id="area" type="number" step="0.1" required></label>
 
-    <label>Материал:
-      <select name="material" id="material" required>
-        <option value="">-- Выберите --</option>
-        <option value="PERLATA">PERLATA</option>
-        <option value="TACTITE">TACTITE</option>
-        <option value="LimeWash">LimeWash</option>
-        <option value="ISTRIA">ISTRIA P350</option>
-      </select>
-    </label>
+    <div class="section">
+      <label>Материал:
+        <select name="material" id="material" required>
+          <option value="">-- Выберите --</option>
+          <option value="PERLATA">PERLATA</option>
+          <option value="TACTITE">TACTITE</option>
+          <option value="LimeWash">LimeWash</option>
+          <option value="ISTRIA">ISTRIA P350</option>
+        </select>
+      </label>
 
-    <label>Количество основного материала (л):
-      <input name="material_qty" id="material_qty" type="number" step="0.1" required>
-    </label>
-    <label>Стоимость (тг):
-      <input name="material_cost" id="material_cost" type="number" step="1" required>
-    </label>
+      <label>Количество основного материала (л):
+        <input name="material_qty" id="material_qty" type="number" step="0.1" required>
+      </label>
+      <label>Стоимость (тг):
+        <input name="material_cost" id="material_cost" type="number" step="1" required>
+      </label>
+    </div>
 
     <div id="aquawaxGroup" class="section hidden">
       <p><strong>AQUAWAX:</strong></p>
