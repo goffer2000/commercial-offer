@@ -40,7 +40,7 @@ def form():
             base_qty = float(base_qty)
             base_cost = int(base_cost)
             if "Dulux" in base_layer or "Marshall" in base_layer:
-                base_price = 8000 if "Dulux" in base_layer else 4000
+                base_price = 8500 if "Dulux" in base_layer else 4500
             else:
                 base_price = 27000
         else:
