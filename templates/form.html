@@ -64,7 +64,7 @@
     </label>
 
     <div id="workFields" class="section hidden">
-      <label>Стоимость работ за 1 кв.м.: <input name="work_price" id="work_price" type="number" step="1" value="7000"></label>
+      <label>Стоимость работ за 1 кв.м.: <input name="work_price" id="work_price" type="number" step="1" value="8500"></label>
       <label>Доп. расходные материалы (компл): <input name="extra_qty" id="extra_qty" type="number" step="0.1"></label>
       <label>Стоимость (тг): <input name="extra_cost" id="extra_cost" type="number" step="1"></label>
       <label>Грунтовка (л): <input name="primer_qty" id="primer_qty" type="number" step="0.1"></label>
@@ -201,7 +201,7 @@
         bindSync(primerQty, primerCost, 2500);
       } else {
         workFields.classList.add("hidden");
-        workPrice.value = 7000;
+        workPrice.value = 8500;
         extraQty.value = extraCost.value = "";
         primerQty.value = primerCost.value = "";
       }
