@@ -55,7 +55,7 @@ def form():
         primer_cost = int(primer_cost) if primer_cost else None
 
         include_work = data.get("include_work") == "on"
-        work_price = float(data.get("work_price", 7000))
+        work_price = float(data.get("work_price", 8500))
         work_sum = round(area * work_price, 2) if include_work else 0
 
         special_note = data.get("special_note", "").strip()
